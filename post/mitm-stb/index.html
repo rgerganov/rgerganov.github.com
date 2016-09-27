@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.16-DEV" />
+
+  <title>MitM&#39;ing my STB &middot; random hacks</title>
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  
+
+  
+
+  <link rel="shortcut icon" href="http://xakcop.com/img/favicon.ico" type="image/x-icon" />
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>MitM&#39;ing my STB</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>27 Sep 2016, 11:19</time>
+  </div>
+
+  
+
+  
+
+  
+
+</div>
+
+  
+
+<p>My ISP is offering IPTV with a set-top-box (STB) device which is connected to
+the provider network and the TV itself:</p>
+
+<p><img src="/images/stb-diagram.png" alt="alt text" title="stb" /></p>
+
+<p>The only &ldquo;user interface&rdquo; for the STB is the remote control.  I was curious to
+find out if the traffic between the STB and the provider is encrypted, so I
+decided to see what goes on the wire.  The easiest way to do this is to create
+an ethernet bridge between the provider and the STB and then capture the
+traffic.  I used my MacBook with a second USB Ethernet adapter. In OSX, an
+ethernet bridge is created like this:</p>
+
+<pre><code>    ifconfig bridge1 create
+    ifconfig bridge1 up
+    ifconfig bridge1 addm en4 addm en5
+    sysctl -w net.inet.ip.forwarding=1
+</code></pre>
+
+<p>I used Wireshark to capture the traffic and to my surprise there was no
+encryption at all. They have been using
+<a href="https://en.wikipedia.org/wiki/Real_Time_Streaming_Protocol">RTSP</a> to switch
+between TV channels:</p>
+
+<p><img src="/images/wireshark-stb.png" alt="alt text" title="wireshark capture" /></p>
+
+<p>Every channel has unique ID like <code>ch12032017033910402807</code>. The ISP is also
+offering some paid channels (like HBO) which I am not subscribed to.  However, I
+managed to find the complete list of channel IDs in the traffic dump, including
+the ones that I am not subscribed to.  In other words, the entire security for
+the paid channels is done on the client side (by the STB) instead on the server
+side.  And you can watch every channel as long as you know its ID.</p>
+
+<p>At this point my first idea was to replace the STB with my own computer which
+can talk their protocol and play the entire set of channels.  However, that
+would be a lot of work which is not fun doing. A better solution would be to
+create a man-in-the-middle between the STB and the provider which can modify the
+traffic and thus substitute some crappy channels with the paid channels. What a
+great opportunity to use my old Raspberry Pi!</p>
+
+<p>The classic MitM with ARP spoofing didn&rsquo;t work out because there was MAC filter
+on the provider side.  Long story short, I created my own tool
+<a href="https://github.com/rgerganov/nfqsed">nfqsed</a> which can transparently modify
+network traffic using a predefined set of substitution rules. I used my USB
+Ethernet adapter to turn my Raspberry Pi into an ethernet bridge. The built-in
+network adapter is connected to the provider and the USB adapter is connected
+to the STB. This is how it looks like from the top:</p>
+
+<p><a href="/images/stb-rpi.jpg" title="stb-rpi"><img src="/images/stb-rpi-small.jpg"></a></p>
+
+<p>Below are the relevant config files on the Raspberry Pi which setup the
+networking and configure nfqsed to replace one TV channel with another:</p>
+
+<h4 id="etc-network-interfaces:20c74a2e69cd0f150ac44d19582008de">/etc/network/interfaces</h4>
+
+<pre><code>iface br0 inet static
+    bridge_ports eth0 eth1
+    address 192.168.1.10
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    dns-nameservers 8.8.8.8
+    up iptables -A FORWARD -p tcp --destination-port 554 -j NFQUEUE --queue-num 0
+</code></pre>
+
+<h4 id="etc-rc-local:20c74a2e69cd0f150ac44d19582008de">/etc/rc.local</h4>
+
+<pre><code>/home/pi/nfqsed/nfqsed -f /home/pi/rules.txt &amp;
+</code></pre>
+
+<h4 id="home-pi-rules-txt:20c74a2e69cd0f150ac44d19582008de">/home/pi/rules.txt</h4>
+
+<pre><code># Fen TV / HBO HD
+/ch13121216533621227255/ch12092914401822894191
+# Folklor TV / HBO Comedy HD
+/ch11123010551095204329/ch12092914413728185379
+# Tqnkov / Cinemax
+/ch11123010550900907719/ch11123010551005188322
+# DM Sat / Cinemax 2
+/ch11123010550925360552/ch11123010551067094950
+</code></pre>
+
+
+  
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="http://xakcop.com/js/ui.js"></script>
+
+
+
+
+</body>
+</html>
+
