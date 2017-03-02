@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="generator" content="Hugo 0.16-DEV" />
 
-  <title>random hacks</title>
+  <title>Cloning RFID cards &middot; random hacks</title>
 
   
   
@@ -36,8 +36,6 @@
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
 
   
-  
-  <link rel="alternate" type="application/rss+xml" title="random hacks" href="http://xakcop.com/index.xml" />
   
 
   
@@ -83,10 +81,6 @@
   <div class="pure-menu social">
   <ul class="pure-menu-list">
 
-    
-    <li class="pure-menu-item">
-      <a class="pure-menu-link" href="http://xakcop.com/index.xml"><i class="fa fa-rss fa-fw"></i>RSS</a>
-    </li>
     
 
     
@@ -184,17 +178,12 @@
 
 
 <div class="header">
-  <h1>random hacks</h1>
+  <h1>Cloning RFID cards</h1>
   <h2></h2>
 </div>
-
 <div class="content">
-  
-    <article>
-  <header>
-    <h2><a href="http://xakcop.com/post/cloning-rfid/">Cloning RFID cards</a></h2>
 
-    <div class="post-meta">
+  <div class="post-meta">
 
   <div>
     <i class="fa fa-calendar fa-fw"></i>
@@ -215,56 +204,74 @@
 
 </div>
 
-  </header>
+  
 
-  <p>
-  This post summarizes my experience with cloning RFID cards that I am using on daily basis. There is nothing new here, just a summary of well-known hacks that I found on the internet. Corporate badge At work we use 125KHz passive RFID badges which are easy to clone. Each badge has unique ID, so the first step is to read this ID. I have been using this DIY reader based on an Arduino: By the way, I had to make some slight changes to the firware to make it work.
-  </p>
+<p>This post summarizes my experience with cloning RFID cards that I am using on daily basis.
+There is nothing new here, just a summary of well-known hacks that I found on the internet.</p>
+
+<h3 id="corporate-badge:a519a81ab2b636a025063ac76150607e">Corporate badge</h3>
+
+<p>At work we use 125KHz passive RFID badges which are easy to clone.
+Each badge has unique ID, so the first step is to read this ID.
+I have been using this DIY <a href="http://playground.arduino.cc/Main/DIYRFIDReader">reader</a> based on an Arduino:</p>
+
+<p><a href="/images/rfid-reader.jpg" title="rfid-reader"><img src="/images/rfid-reader-small.jpg"></a></p>
+
+<p>By the way, I had to make some slight <a href="https://gist.github.com/rgerganov/c8cec1f2c498c1e0786084bfdc1240b7">changes</a> to the firware to make it work.</p>
+
+<p>Once you get the ID, you can &ldquo;program&rdquo; it on an ATtiny85 microcontroller as described <a href="http://scanlime.org/2008/09/using-an-avr-as-an-rfid-tag/">here</a>.
+This is how my assembled clone looks like:</p>
+
+<p><a href="/images/rfid-badge.jpg" title="rfid-badge"><img src="/images/rfid-badge-small.jpg"></a></p>
+
+<h3 id="residential-entry:a519a81ab2b636a025063ac76150607e">Residential entry</h3>
+
+<p>The building where I live (and many other buildings) has a front door which is opened with an NFC tag. I found that it is Mifare Classic 1k tag
+which has been cracked long time ago. Actually, it turned out that I don&rsquo;t have to crack anything to create a clone because the tag had default keys.
+They were relying only on the fact that each tag has unique ID and the door opens when pre-recorded ID is shown.
+Some fine people in China are selling tags that you can program with whatever ID you want, so creating is a clone a simple matter of running <code>nfc-mfsetuid</code>:</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/14.js" id="asciicast-99020" async></script>
+
+<h3 id="public-transport:a519a81ab2b636a025063ac76150607e">Public transport</h3>
+
+<p>Turns out that Mifare Classic 1k is also being used for the public transport in Sofia. I managed to crack one of the old cards that I have &ndash; it has been
+using a combination of default keys and &ldquo;SofiaM&rdquo;:</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/14.js" id="asciicast-a1fjcus3zcgkxpvh3i72txy91" async></script>
+
+<p>However, some of the new cards for the subway manage to resist my cracking attempts.
+I guess they are using something more secure which is running an emulation of Mifare Classic.</p>
+
 
   
-  <footer>
-    <a href="/post/cloning-rfid/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="http://xakcop.com/post/mitm-stb/">MitM&#39;ing my STB</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>27 Sep 2016, 11:19</time>
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="http://xakcop.com/post/mitm-stb/"><i class="fa fa-chevron-left"></i></a>
+    
   </div>
-
-  
-
-  
-
-  
-
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="http://xakcop.com/post/mitm-stb/">MitM&#39;ing my STB</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
 </div>
 
-  </header>
 
-  <p>
-  My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself: The only &ldquo;user interface&rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.
-  </p>
 
   
-  <footer>
-    <a href="/post/mitm-stb/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-
-  
-
 
 </div>
 
