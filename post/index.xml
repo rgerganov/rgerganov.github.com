@@ -7,8 +7,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016. All rights reserved.</copyright>
-    <lastBuildDate>Sun, 29 Jan 2017 13:27:39 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 22 Mar 2017 10:21:41 +0200</lastBuildDate>
     <atom:link href="http://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Virtual USB drive</title>
+      <link>http://xakcop.com/post/virt-usb-drive/</link>
+      <pubDate>Wed, 22 Mar 2017 10:21:41 +0200</pubDate>
+      
+      <guid>http://xakcop.com/post/virt-usb-drive/</guid>
+      <description>&lt;p&gt;This is a PoC for something I call &amp;ldquo;virtual usb drive&amp;rdquo;. The drive is created on Linux using the
+&lt;a href=&#34;https://www.kernel.org/doc/Documentation/usb/mass-storage.txt&#34;&gt;MSG&lt;/a&gt; kernel module.
+Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&amp;rsquo;s pretty cool hack, so I decided
+to share it.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;DISCLAIMER&lt;/strong&gt;: This is unofficial and unsupported, use it at your own risk.&lt;/p&gt;
+
+&lt;p&gt;Here is a demo:&lt;/p&gt;
+
+&lt;iframe width=&#34;640&#34; height=&#34;360&#34; src=&#34;https://www.youtube.com/embed/RSxUyQDnd2w&#34; frameborder=&#34;0&#34; allowfullscreen&gt;&lt;/iframe&gt;
+
+&lt;p&gt;You can find the supporting scripts &lt;a href=&#34;https://gist.github.com/rgerganov/df442733da54ad104bf03d81355a845e&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Cloning RFID cards</title>
