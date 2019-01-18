@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.16-DEV" />
+  <meta name="generator" content="Hugo 0.18.1" />
 
   <title>random hacks</title>
 
@@ -169,7 +169,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016. All rights reserved.</small>
+    <small>&copy; 2016-2019. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -189,6 +189,41 @@
 </div>
 
 <div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="http://xakcop.com/post/ctrl-air-purifier/">Controlling my Air Purifier</a></h2>
+
+    <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>19 Jan 2019, 10:49</time>
+  </div>
+
+  
+
+  
+
+  
+
+</div>
+
+  </header>
+
+  <p>
+  The air pollution in Sofia is really high during the winter, so I decided to buy an air purifier for my home. After some short research, I bought Philips AC2729:
+ 
+it can purify and humidify the air at the same time, show particulate matter (PM 2.5) / humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows remote control with a mobile app. Being able to control the device with my phone sounds pretty cool but after reading so many stories about the so called Internet of Shit, I thought it&rsquo;d be a good idea to inspect what kind of data this thing sends and ultimately create my own tool to control it.
+  </p>
+
+  
+  <footer>
+    <a href="/post/ctrl-air-purifier/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
+
   
     <article>
   <header>
@@ -218,9 +253,16 @@
   </header>
 
   <p>
-  This is a PoC for something I call &ldquo;virtual usb drive&rdquo;. The drive is created on Linux using the MSG kernel module. Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&rsquo;s pretty cool hack, so I decided to share it. DISCLAIMER: This is unofficial and unsupported, use it at your own risk. Here is a demo: You can find the supporting scripts here.
+  This is a PoC for something I call &ldquo;virtual usb drive&rdquo;. The drive is created on Linux using the MSG kernel module. Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&rsquo;s pretty cool hack, so I decided to share it.
+DISCLAIMER: This is unofficial and unsupported, use it at your own risk.
+Here is a demo:
+  You can find the supporting scripts here.
   </p>
 
+  
+  <footer>
+    <a href="/post/virt-usb-drive/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
   
 </article>
 
@@ -253,7 +295,8 @@
   </header>
 
   <p>
-  This post summarizes my experience with cloning RFID cards that I am using on daily basis. There is nothing new here, just a summary of well-known hacks that I found on the internet. Corporate badge At work we use 125KHz passive RFID badges which are easy to clone. Each badge has unique ID, so the first step is to read this ID. I have been using this DIY reader based on an Arduino: By the way, I had to make some slight changes to the firware to make it work.
+  This post summarizes my experience with cloning RFID cards that I am using on daily basis. There is nothing new here, just a summary of well-known hacks that I found on the internet.
+Corporate badge At work we use 125KHz passive RFID badges which are easy to clone. Each badge has unique ID, so the first step is to read this ID. I have been using this DIY reader based on an Arduino:
   </p>
 
   
@@ -286,7 +329,8 @@
   </header>
 
   <p>
-  My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself: The only &ldquo;user interface&rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.
+  My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself:
+ The only &ldquo;user interface&rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.
   </p>
 
   

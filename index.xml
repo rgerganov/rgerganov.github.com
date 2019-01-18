@@ -2,13 +2,208 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>random hacks</title>
-    <link>http://xakcop.com/</link>
+    <link>http://xakcop.com/index.xml</link>
     <description>Recent content on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2016. All rights reserved.</copyright>
-    <lastBuildDate>Wed, 22 Mar 2017 10:21:41 +0200</lastBuildDate>
+    <copyright>&amp;copy; 2016-2019. All rights reserved.</copyright>
+    <lastBuildDate>Sat, 19 Jan 2019 10:49:37 +0200</lastBuildDate>
     <atom:link href="http://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Controlling my Air Purifier</title>
+      <link>http://xakcop.com/post/ctrl-air-purifier/</link>
+      <pubDate>Sat, 19 Jan 2019 10:49:37 +0200</pubDate>
+      
+      <guid>http://xakcop.com/post/ctrl-air-purifier/</guid>
+      <description>
+
+&lt;p&gt;The air pollution in Sofia is really high during the winter, so I decided to buy an air
+purifier for my home. After some short research, I bought Philips AC2729:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/ac2729.jpg&#34; title=&#34;ac2729&#34;&gt;
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;http://xakcop.com/images/ac2729-small.jpg&#34; alt=&#34;ac2729&#34;&gt;
+&lt;/div&gt;
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;it can purify and humidify the air at the same time, show particulate matter (PM 2.5) /
+humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows
+remote control with a mobile app. Being able to control the device with my phone sounds
+pretty cool but after reading so many stories about the so called
+&lt;a href=&#34;https://twitter.com/internetofshit&#34;&gt;Internet of Shit&lt;/a&gt;, I thought it&amp;rsquo;d be a good idea to
+inspect what kind of data this thing sends and ultimately create my own tool to control
+it. It&amp;rsquo;d be a fun side project as well :)&lt;/p&gt;
+
+&lt;h2 id=&#34;network-analysis&#34;&gt;Network analysis&lt;/h2&gt;
+
+&lt;p&gt;The first step of course is capturing the network traffic that comes in and goes out from
+the device. There are several ways to do this with a PC and good Wi-Fi adapter but I took
+advantage of the built-in
+&lt;a href=&#34;https://wiki.mikrotik.com/wiki/Manual:Tools/Packet_Sniffer&#34;&gt;packet sniffer&lt;/a&gt; that my
+router has and recorded the traffic during the initial setup of the purifier and some
+interactions with the &lt;a href=&#34;https://play.google.com/store/apps/details?id=com.freshideas.airindex&#34;&gt;mobile app&lt;/a&gt;.
+Then I opened the recorded .pcap file in Wireshark and quickly realized couple of things:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;the device is sending data to a Philips server (www.ecdinterface.philips.com),
+no surprise here &amp;hellip;&lt;/li&gt;
+&lt;li&gt;the device runs an HTTP server and is controlled via some REST API from the mobile app&lt;/li&gt;
+&lt;li&gt;it uses plain HTTP with some custom encryption for the request/response body&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I can easily disable the phone-home functionality by putting a firewall rule in my router
+and limit all traffic to my local network. But I also want to understand how the device
+is controlled and for this I need to decrypt the network traffic between the purifier and
+the mobile app.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s take a closer look to the initial interaction between those two
+parties:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;PUT /di/v1/products/0/security HTTP/1.1
+content-type: application/json
+connection: close
+User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Pixel XL Build/PQ1A.181205.002.A1)
+Host: 192.168.0.17
+Accept-Encoding: gzip
+Content-Length: 269
+
+{&amp;quot;diffie&amp;quot;:&amp;quot;4FB7FC5543219711B7144FDA72E4A2...&amp;quot;}
+
+HTTP/1.1 200
+Content-Length: 343
+Content-Type: application/json
+Connection: Close
+
+{&amp;quot;hellman&amp;quot;:&amp;quot;4a5008cbc6e4523f27e...&amp;quot;,
+ &amp;quot;key&amp;quot;:&amp;quot;9d90df8e281855117467e09fa75de7aa60097c16657a5cc04b094e7dbb4b0518&amp;quot;}
+
+GET /di/v1/products/1/device HTTP/1.1
+content-type: application/json
+connection: close
+User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Pixel XL Build/PQ1A.181205.002.A1)
+Host: 192.168.0.17
+Accept-Encoding: gzip
+
+HTTP/1.1 200
+Content-Length: 128
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Connection: Close
+
+SwZyJzgE66DpOjL6nshHS/xjF9VHxL7Fg0XjHDmDtNhBBBMC4FeuJzBQiQx8QFcIlyoOTaEPUq
+QqDmN1f2we0MRjSjyt4aEenNlvtvj/vCa+e15btQcZYWcqTHvpr1Pb
+
+POST /di/v1/products/1/air HTTP/1.1
+content-type: application/json
+connection: close
+User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Pixel XL Build/PQ1A.181205.002.A1)
+Host: 192.168.0.17
+Accept-Encoding: gzip
+Content-Length: 65
+
+Mt32GhsP00A6cDdHf+8vBMMKsJU/rZsD7onyiTjNDxPlRhepKspv/lw9GKhhYc6O
+
+HTTP/1.1 200
+Content-Length: 256
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Connection: Close
+
+NbV7wqswB4p3/yV6KSBN92c9sLy3tOjbUaCWqfddss1oIUNGl3EPacivoqROasGPS9x8VRwRIV734jQ0Q
+Amm/0OehccirajReq0/yEcwV7jo+gbkEIaIUNdVE/XccXptR3VTsO3W/7ge5U9wM7NM9jAz7BgvkKoEtjg
+7+3Rs7M9lgiTpcDr85b5NMo/tIpzeKM7+CMtmI9toOaDmnjxqoJO1JhpAk7VP5lCO5m/iFfFWPgeWYSlvw
+YK6SGVqzqlP
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The first request to &lt;code&gt;/di/v1/products/0/security&lt;/code&gt; is plain text and it seems to be a
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange&#34;&gt;Diffie-Hellman&lt;/a&gt; key
+exchange (truncated by me for readability). The following requests are base64 encoded and
+decoding them doesn&amp;rsquo;t produce anything meaningful. So it looks like a secret key is
+exchanged at the beginning and then used to encrypt further communication.
+There is only one way to verify this theory &amp;ndash; reverse engineering the mobile app!&lt;/p&gt;
+
+&lt;h2 id=&#34;reversing-the-original-app&#34;&gt;Reversing the original app&lt;/h2&gt;
+
+&lt;p&gt;The mobile app is Air Matters and I downloaded its Android version which is an apk file.
+Then I used the &lt;a href=&#34;https://github.com/skylot/jadx&#34;&gt;jadx&lt;/a&gt; tool to decompile it. With a few
+greps over the decompiled sources, I found the relevant encryption/decryption classes:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;com/philips/cdp2/commlib/lan/communication/ExchangeKeyRequest.java
+com/philips/cdp/dicommclient/security/EncryptionUtil.java
+com/philips/cdp/dicommclient/security/ByteUtil.java
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With this I have been able to recover the following steps:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;The app and the device establish a shared secret using the Diffie-Hellman algorithm&lt;/li&gt;
+&lt;li&gt;The device generates a session key and encrypts it with AES using the shared secret
+from step 1 as a key. The encrypted session key is set in the &lt;code&gt;key&lt;/code&gt; property of the
+response message from &lt;code&gt;PUT /di/v1/products/0/security&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The session key from step 2 is used to encrypt/decrypt with AES all further requests
+and responses&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I also found the &lt;code&gt;G&lt;/code&gt; and &lt;code&gt;P&lt;/code&gt; values used for Diffie-Hellman in &lt;code&gt;ByteUtil.java&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static final String GVALUE = &amp;quot;A4D1CBD5C3FD34126765A442EFB99905F8104DD258AC507FD6406CFF14266D31266FEA1E5C41564B777E690F5504F213160217B4B01B886A5E91547F9E2749F4D7FBD7D3B9A92EE1909D0D2263F80A76A6A24C087A091F531DBF0A0169B6A28AD662A4D18E73AFA32D779D5918D08BC8858F4DCEF97C2A24855E6EEB22B3B2E5&amp;quot;;
+static final String PVALUE = &amp;quot;B10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4371&amp;quot;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, this is not enough to find the shared secret which is being established.
+In fact, &lt;code&gt;G&lt;/code&gt; and &lt;code&gt;P&lt;/code&gt; are public values. Cracking Diffie-Hellman boils down to solving the
+discrete logarithm problem which is to find a value &lt;code&gt;&amp;quot;a&amp;quot;&lt;/code&gt; such that &lt;code&gt;G^a mod P=A&lt;/code&gt;.
+We already have G and P from the decompiled source and we also have &lt;code&gt;A&lt;/code&gt; which corresponds
+to the &lt;code&gt;&amp;quot;diffie&amp;quot;&lt;/code&gt; property in the network request. The shared secret is equal to
+&lt;code&gt;B^a mod P&lt;/code&gt; where &lt;code&gt;B&lt;/code&gt; corresponds to the &lt;code&gt;&amp;quot;hellman&amp;quot;&lt;/code&gt; property in the network response.
+The value &lt;code&gt;&amp;quot;a&amp;quot;&lt;/code&gt; is by definition a big random number which makes solving &lt;code&gt;G^a mod P=A&lt;/code&gt; very
+hard. Let&amp;rsquo;s see how this random exponent is generated in &lt;code&gt;ByteUtil.java&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public static String generateRandomNum() {
+    return String.valueOf((new SecureRandom().nextInt(2147483546) + 1) + 101);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It seems this random number is only 31 bits. It also seems that the person who wrote this
+didn&amp;rsquo;t know what he is doing :) Solving the discrete logarithm problem when &lt;code&gt;a&lt;/code&gt; is only
+31 bits turns out to be not hard at all. In fact, it can be solved for less than a second
+using the &lt;a href=&#34;https://en.wikipedia.org/wiki/Baby-step_giant-step&#34;&gt;Baby-step Giant-step&lt;/a&gt;
+algorithm. Check out my implementation at &lt;a href=&#34;https://github.com/rgerganov/dlp&#34;&gt;https://github.com/rgerganov/dlp&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;open-source-client&#34;&gt;Open source client&lt;/h2&gt;
+
+&lt;p&gt;After finding the session key and decrypting the entire traffic, I have been able to
+implement my own fully-featured command line
+&lt;a href=&#34;https://github.com/rgerganov/py-air-control&#34;&gt;client&lt;/a&gt;. Check this out:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./airctrl.py 192.168.0.17
+[pwr]   Power: ON
+[pm25]  PM25: 4
+[rh]    Humidity: 32
+[rhset] Target humidity: 60
+[iaql]  Allergen index: 1
+[temp]  Temperature: 22
+[func]  Function: Purification &amp;amp; Humidification
+[mode]  Mode: M
+[om]    Fan speed: 2
+[aqil]  Light brightness: 100
+[wl]    Water level: 100
+[cl]    Child lock: False
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As an added bonus, it also shows the current temperature which is missing in the original
+mobile app :)&lt;/p&gt;
+
+&lt;h2 id=&#34;future-work&#34;&gt;Future work&lt;/h2&gt;
+
+&lt;p&gt;As I said the purifier has a phone-home functionality which is using another form of
+custom encryption but this time implemented in a native library.  Reversing this part
+will take more time but something tells me it may allow doing some crazy stuff ;)&lt;/p&gt;
+
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Virtual USB drive</title>
@@ -25,7 +220,11 @@ to share it.&lt;/p&gt;
 
 &lt;p&gt;Here is a demo:&lt;/p&gt;
 
-&lt;iframe width=&#34;640&#34; height=&#34;360&#34; src=&#34;https://www.youtube.com/embed/RSxUyQDnd2w&#34; frameborder=&#34;0&#34; allowfullscreen&gt;&lt;/iframe&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;//www.youtube.com/embed/RSxUyQDnd2w&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%;&#34; allowfullscreen frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+
 
 &lt;p&gt;You can find the supporting scripts &lt;a href=&#34;https://gist.github.com/rgerganov/df442733da54ad104bf03d81355a845e&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 </description>
@@ -42,22 +241,30 @@ to share it.&lt;/p&gt;
 &lt;p&gt;This post summarizes my experience with cloning RFID cards that I am using on daily basis.
 There is nothing new here, just a summary of well-known hacks that I found on the internet.&lt;/p&gt;
 
-&lt;h3 id=&#34;corporate-badge:a519a81ab2b636a025063ac76150607e&#34;&gt;Corporate badge&lt;/h3&gt;
+&lt;h3 id=&#34;corporate-badge&#34;&gt;Corporate badge&lt;/h3&gt;
 
 &lt;p&gt;At work we use 125KHz passive RFID badges which are easy to clone.
 Each badge has unique ID, so the first step is to read this ID.
 I have been using this DIY &lt;a href=&#34;http://playground.arduino.cc/Main/DIYRFIDReader&#34;&gt;reader&lt;/a&gt; based on an Arduino:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/rfid-reader.jpg&#34; title=&#34;rfid-reader&#34;&gt;&lt;img src=&#34;http://xakcop.com/images/rfid-reader-small.jpg&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/rfid-reader.jpg&#34; title=&#34;rfid-reader&#34;&gt;
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;http://xakcop.com/images/rfid-reader-small.jpg&#34; &gt;
+&lt;/div&gt;
+&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;By the way, I had to make some slight &lt;a href=&#34;https://gist.github.com/rgerganov/c8cec1f2c498c1e0786084bfdc1240b7&#34;&gt;changes&lt;/a&gt; to the firware to make it work.&lt;/p&gt;
 
 &lt;p&gt;Once you get the ID, you can &amp;ldquo;program&amp;rdquo; it on an ATtiny85 microcontroller as described &lt;a href=&#34;http://scanlime.org/2008/09/using-an-avr-as-an-rfid-tag/&#34;&gt;here&lt;/a&gt;.
 This is how my assembled clone looks like:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/rfid-badge.jpg&#34; title=&#34;rfid-badge&#34;&gt;&lt;img src=&#34;http://xakcop.com/images/rfid-badge-small.jpg&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/rfid-badge.jpg&#34; title=&#34;rfid-badge&#34;&gt;
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;http://xakcop.com/images/rfid-badge-small.jpg&#34; &gt;
+&lt;/div&gt;
+&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;residential-entry:a519a81ab2b636a025063ac76150607e&#34;&gt;Residential entry&lt;/h3&gt;
+&lt;h3 id=&#34;residential-entry&#34;&gt;Residential entry&lt;/h3&gt;
 
 &lt;p&gt;The building where I live (and many other buildings) has a front door which is opened with an NFC tag. I found that it is Mifare Classic 1k tag
 which has been cracked long time ago. Actually, it turned out that I don&amp;rsquo;t have to crack anything to create a clone because the tag had default keys.
@@ -66,7 +273,7 @@ Some fine people in China are selling tags that you can program with whatever ID
 
 &lt;script type=&#34;text/javascript&#34; src=&#34;https://asciinema.org/a/14.js&#34; id=&#34;asciicast-99020&#34; async&gt;&lt;/script&gt;
 
-&lt;h3 id=&#34;public-transport:a519a81ab2b636a025063ac76150607e&#34;&gt;Public transport&lt;/h3&gt;
+&lt;h3 id=&#34;public-transport&#34;&gt;Public transport&lt;/h3&gt;
 
 &lt;p&gt;Turns out that Mifare Classic 1k is also being used for the public transport in Sofia. I managed to crack one of the old cards that I have &amp;ndash; it has been
 using a combination of default keys and &amp;ldquo;SofiaM&amp;rdquo;:&lt;/p&gt;
@@ -91,7 +298,11 @@ I guess they are using something more secure which is running an emulation of Mi
 &lt;p&gt;My ISP is offering IPTV with a set-top-box (STB) device which is connected to
 the provider network and the TV itself:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://xakcop.com/images/stb-diagram.png&#34; alt=&#34;alt text&#34; title=&#34;stb&#34; /&gt;&lt;/p&gt;
+
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;http://xakcop.com/images/stb-diagram.png&#34; alt=&#34;stb-diagram&#34;&gt;
+&lt;/div&gt;
+
 
 &lt;p&gt;The only &amp;ldquo;user interface&amp;rdquo; for the STB is the remote control.  I was curious to
 find out if the traffic between the STB and the provider is encrypted, so I
@@ -111,7 +322,11 @@ encryption at all. They have been using
 &lt;a href=&#34;https://en.wikipedia.org/wiki/Real_Time_Streaming_Protocol&#34;&gt;RTSP&lt;/a&gt; to switch
 between TV channels:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://xakcop.com/images/wireshark-stb.png&#34; alt=&#34;alt text&#34; title=&#34;wireshark capture&#34; /&gt;&lt;/p&gt;
+
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;http://xakcop.com/images/wireshark-stb.png&#34; alt=&#34;wireshark capture&#34;&gt;
+&lt;/div&gt;
+
 
 &lt;p&gt;Every channel has unique ID like &lt;code&gt;ch12032017033910402807&lt;/code&gt;. The ISP is also
 offering some paid channels (like HBO) which I am not subscribed to.  However, I
@@ -135,12 +350,16 @@ Ethernet adapter to turn my Raspberry Pi into an ethernet bridge. The built-in
 network adapter is connected to the provider and the USB adapter is connected
 to the STB. This is how it looks like from the top:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/stb-rpi.jpg&#34; title=&#34;stb-rpi&#34;&gt;&lt;img src=&#34;http://xakcop.com/images/stb-rpi-small.jpg&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://xakcop.com/images/stb-rpi.jpg&#34; title=&#34;stb-rpi&#34;&gt;
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;http://xakcop.com/images/stb-rpi-small.jpg&#34; &gt;
+&lt;/div&gt;
+&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Below are the relevant config files on the Raspberry Pi which setup the
 networking and configure nfqsed to replace one TV channel with another:&lt;/p&gt;
 
-&lt;h4 id=&#34;etc-network-interfaces:20c74a2e69cd0f150ac44d19582008de&#34;&gt;/etc/network/interfaces&lt;/h4&gt;
+&lt;h4 id=&#34;etc-network-interfaces&#34;&gt;/etc/network/interfaces&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code&gt;iface br0 inet static
     bridge_ports eth0 eth1
@@ -151,12 +370,12 @@ networking and configure nfqsed to replace one TV channel with another:&lt;/p&gt
     up iptables -A FORWARD -p tcp --destination-port 554 -j NFQUEUE --queue-num 0
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;etc-rc-local:20c74a2e69cd0f150ac44d19582008de&#34;&gt;/etc/rc.local&lt;/h4&gt;
+&lt;h4 id=&#34;etc-rc-local&#34;&gt;/etc/rc.local&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code&gt;/home/pi/nfqsed/nfqsed -f /home/pi/rules.txt &amp;amp;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;home-pi-rules-txt:20c74a2e69cd0f150ac44d19582008de&#34;&gt;/home/pi/rules.txt&lt;/h4&gt;
+&lt;h4 id=&#34;home-pi-rules-txt&#34;&gt;/home/pi/rules.txt&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code&gt;# Fen TV / HBO HD
 /ch13121216533621227255/ch12092914401822894191
