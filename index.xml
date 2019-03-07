@@ -7,8 +7,164 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2019. All rights reserved.</copyright>
-    <lastBuildDate>Sat, 19 Jan 2019 10:49:37 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 07 Mar 2019 16:33:12 +0200</lastBuildDate>
     <atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Debugging the Linux kernel with VMware</title>
+      <link>https://xakcop.com/post/vmw-kernel-debugging/</link>
+      <pubDate>Thu, 07 Mar 2019 16:33:12 +0200</pubDate>
+      
+      <guid>https://xakcop.com/post/vmw-kernel-debugging/</guid>
+      <description>
+
+&lt;p&gt;I am playing with emulated HID devices in Linux and found a kernel bug when using the &lt;code&gt;usb_f_hid&lt;/code&gt; and &lt;code&gt;dummy_hcd&lt;/code&gt; kernel modules.
+I won&amp;rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this
+particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Load &lt;code&gt;libcomposite&lt;/code&gt; and &lt;code&gt;dummy_hcd&lt;/code&gt; into the kernel&lt;/li&gt;
+&lt;li&gt;Create an emulated HID device with configfs&lt;/li&gt;
+&lt;li&gt;Write something to &lt;code&gt;/dev/hidg0&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;After executing step 3, the machine hangs in a way which makes it clear that it&amp;rsquo;s not a userspace problem but a kernel one.&lt;/p&gt;
+
+&lt;p&gt;I know that &lt;a href=&#34;https://www.vmware.com/products/workstation-pro.html&#34;&gt;VMware Workstation&lt;/a&gt; has support for kernel debugging, so
+I thought this is a great chance to give it a try.
+I loaded Ubuntu 18.04 into a VM and executed the steps above. The VM hanged and the corresponding &lt;code&gt;vmware-vmx&lt;/code&gt; process in the
+host OS went to 100% CPU usage. This means that when the problem occurs, the kernel goes into some kind of busy loop.
+Let&amp;rsquo;s see how we can debug this further.&lt;/p&gt;
+
+&lt;h2 id=&#34;vm-config&#34;&gt;VM config&lt;/h2&gt;
+
+&lt;p&gt;VMware Workstation has a nice feature which allows to debug the Linux kernel running inside the VM with &lt;code&gt;gdb&lt;/code&gt; on the host.
+This is enabled by adding a single line to the VM&amp;rsquo;s configuration file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;debugStub.listen.guest64 = &amp;quot;TRUE&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now when the VM is started, port 8864 is opened on the host and we can connect to it with &lt;code&gt;gdb&lt;/code&gt; for remote debugging.&lt;/p&gt;
+
+&lt;h2 id=&#34;preparing-the-guest-os&#34;&gt;Preparing the guest OS&lt;/h2&gt;
+
+&lt;p&gt;First, we want to disable &lt;a href=&#34;https://en.wikipedia.org/wiki/Address_space_layout_randomization&#34;&gt;KASLR&lt;/a&gt;
+as it will make the debugging harder. This is done by booting the kernel with the &lt;code&gt;nokaslr&lt;/code&gt; option.&lt;/p&gt;
+
+&lt;p&gt;Open &lt;code&gt;/etc/default/grub&lt;/code&gt;, find the line starting with &lt;code&gt;GRUB_CMDLINE_LINUX_DEFAULT&lt;/code&gt; and append &lt;code&gt;nokaslr&lt;/code&gt; at the end.
+Then update GRUB:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;sudo update-grub&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;and reboot the VM.&lt;/p&gt;
+
+&lt;p&gt;Next, we want to obtain debug symbols for the running kernel and its modules.
+For Ubuntu there is a dedicated &lt;a href=&#34;https://wiki.ubuntu.com/Debug%20Symbol%20Packages#Getting_-dbgsym.ddeb_packages&#34;&gt;repository&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse
+deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse
+deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse&amp;quot; | \
+sudo tee -a /etc/apt/sources.list.d/ddebs.list
+sudo apt install ubuntu-dbgsym-keyring
+sudo apt-get update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Install kernel with debug symbols:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get install linux-image-`uname -r`-dbgsym
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Copy the following files to the host OS as we need to load them into &lt;code&gt;gdb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/lib/debug/boot/vmlinux-4.15.0-45-generic
+/usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/udc/udc-core.ko
+/usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/function/usb_f_hid.ko
+dummy_hcd.ko
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: &lt;code&gt;dummy_hcd&lt;/code&gt; is missing in Ubuntu (see this &lt;a href=&#34;https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1073089&#34;&gt;bug&lt;/a&gt;), I built it by myself.&lt;/p&gt;
+
+&lt;h2 id=&#34;using-gdb&#34;&gt;Using GDB&lt;/h2&gt;
+
+&lt;p&gt;Now that we have the debug symbols, we are ready to fire off &lt;code&gt;gdb&lt;/code&gt; in the host OS:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gdb vmlinux-4.15.0-45-generic
+
+(gdb) set architecture i386:x86-64
+(gdb) target remote localhost:8864
+(gdb) c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hitting Ctrl+C will pause the VM:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://xakcop.com/images/debug-vm.png&#34; title=&#34;debugvm&#34;&gt;
+&lt;div class=&#34;pure-u-1-1&#34;&gt;
+  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/debug-vm-small.png&#34; alt=&#34;debugvm&#34;&gt;
+&lt;/div&gt;
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;so we can inspect the state in the debugger.&lt;/p&gt;
+
+&lt;p&gt;We also need to load the symbols for the kernel modules that we want to debug.
+However, modules can be dynamically loaded at any address and we need to feed this information into &lt;code&gt;gdb&lt;/code&gt;.
+Let&amp;rsquo;s take for example &lt;code&gt;usb_f_hid&lt;/code&gt;. We can get the corresponding addresses in the guest OS like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cd /sys/module/usb_f_hid/sections
+$ sudo cat .text .data .bss 
+0xffffffffc06d7000
+0xffffffffc06da000
+0xffffffffc06da740
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we can add the symbol file in &lt;code&gt;gdb&lt;/code&gt; using the addresses from above:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(gdb) add-symbol-file usb_f_hid.ko 0xffffffffc06d7000 -s .data 0xffffffffc06da000 -s .bss 0xffffffffc06da740
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We do the same for &lt;code&gt;udc-core&lt;/code&gt; and &lt;code&gt;dummy_hcd&lt;/code&gt;.
+Now that we have all symbols loaded, we can trigger the bug in the guest OS and then hit Ctrl+C in &lt;code&gt;gdb&lt;/code&gt; to
+inspect the backtrace:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;^C
+Program received signal SIGINT, Interrupt.
+0xffffffff810de405 in rep_nop () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:647
+647 /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h: No such file or directory.
+(gdb) bt
+#0  0xffffffff810de405 in rep_nop () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:647
+#1  cpu_relax () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:652
+#2  virt_spin_lock (lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/qspinlock.h:69
+#3  native_queued_spin_lock_slowpath (lock=0xffff88007196984c, val=1) at /build/linux-uQJ2um/linux-4.15.0/kernel/locking/qspinlock.c:305
+#4  0xffffffff8199f407 in pv_queued_spin_lock_slowpath (val=&amp;lt;optimized out&amp;gt;, lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/paravirt.h:669
+#5  queued_spin_lock_slowpath (val=&amp;lt;optimized out&amp;gt;, lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/qspinlock.h:30
+#6  queued_spin_lock (lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/include/asm-generic/qspinlock.h:90
+#7  do_raw_spin_lock_flags (flags=&amp;lt;optimized out&amp;gt;, lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/include/linux/spinlock.h:172
+#8  __raw_spin_lock_irqsave (lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/include/linux/spinlock_api_smp.h:119
+#9  _raw_spin_lock_irqsave (lock=0xffff88007196984c) at /build/linux-uQJ2um/linux-4.15.0/kernel/locking/spinlock.c:152
+#10 0xffffffffc06d7410 in f_hidg_req_complete (ep=&amp;lt;optimized out&amp;gt;, req=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/drivers/usb/gadget/function/f_hid.c:328
+#11 0xffffffffc06a390a in usb_gadget_giveback_request ()
+#12 0xffffffffc06cdff2 in dummy_queue ()
+#13 0xffffffffc06a2b96 in usb_ep_queue ()
+#14 0xffffffffc06d7eb6 in f_hidg_write (file=&amp;lt;optimized out&amp;gt;, buffer=&amp;lt;optimized out&amp;gt;, count=5, offp=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/drivers/usb/gadget/function/f_hid.c:394
+#15 0xffffffff8127730b in __vfs_write (file=&amp;lt;optimized out&amp;gt;, p=&amp;lt;optimized out&amp;gt;, count=&amp;lt;optimized out&amp;gt;, pos=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:481
+#16 0xffffffff812774d1 in vfs_write (file=0xffff880077b77c00, buf=0x55841858c7c0 &amp;quot;fira\n&amp;quot;, count=&amp;lt;optimized out&amp;gt;, pos=0xffffc90000bbbef8) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:569
+#17 0xffffffff81277725 in SYSC_write (count=&amp;lt;optimized out&amp;gt;, buf=&amp;lt;optimized out&amp;gt;, fd=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:615
+#18 SyS_write (fd=&amp;lt;optimized out&amp;gt;, buf=94025832515520, count=5) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:607
+#19 0xffffffff81003ae3 in do_syscall_64 ()
+#20 0xffffffff81a00081 in entry_SYSCALL_64 () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/entry/entry_64.S:237
+#21 0x00007f8e8d85d760 in ?? ()
+#22 0x00007f8e8d85e2a0 in ?? ()
+#23 0x0000000000000005 in irq_stack_union ()
+Backtrace stopped: previous frame inner to this frame (corrupt stack?)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This reveals a deadlock involving &lt;code&gt;hidg-&amp;gt;write_spinlock&lt;/code&gt; in &lt;code&gt;f_hid.c&lt;/code&gt; which explains why the CPU goes to 100% when the bug occurs.
+The spinlock is acquired in the &lt;code&gt;f_hidg_write()&lt;/code&gt; function before calling &lt;code&gt;usb_ep_queue()&lt;/code&gt; which callbacks to &lt;code&gt;f_hidg_req_complete()&lt;/code&gt; which
+tries to acquire the same spinlock again.&lt;/p&gt;
+
+&lt;p&gt;My attempt to fix this bug is this &lt;a href=&#34;https://www.spinics.net/lists/linux-usb/msg177735.html&#34;&gt;patch&lt;/a&gt; which I submitted to the maintainers of the USB subsytem.
+Let&amp;rsquo;s see how that goes :)&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Controlling my Air Purifier</title>
