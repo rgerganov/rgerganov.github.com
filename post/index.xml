@@ -163,6 +163,8 @@ tries to acquire the same spinlock again.&lt;/p&gt;
 
 &lt;p&gt;My attempt to fix this bug is this &lt;a href=&#34;https://www.spinics.net/lists/linux-usb/msg177735.html&#34;&gt;patch&lt;/a&gt; which I submitted to the maintainers of the USB subsytem.
 Let&amp;rsquo;s see how that goes :)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; My patch has been &lt;a href=&#34;https://github.com/torvalds/linux/commit/072684e8c58d17e853f8e8b9f6d9ce2e58d2b036&#34;&gt;merged&lt;/a&gt; in Linux 5.1-rc3&lt;/p&gt;
 </description>
     </item>
     
