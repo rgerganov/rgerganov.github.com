@@ -5,19 +5,21 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.18.1" />
+  <meta name="generator" content="Hugo 0.59.1" />
 
   <title>Debugging the Linux kernel with VMware &middot; random hacks</title>
 
+    
+
   
   
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
 
   <!--[if lte IE 8]>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-old-ie-min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
   <![endif]-->
   <!--[if gt IE 8]><!-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
   <!--<![endif]-->
 
   <!--[if lte IE 8]>
@@ -30,14 +32,22 @@
   <link rel="stylesheet" href="/css/blackburn.css">
 
   
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
   
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
   
 
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
   
 
   <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
@@ -88,8 +98,12 @@
 
     
     <li class="pure-menu-item">
-      <a class="pure-menu-link" href="https://twitter.com/rgerganov" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
     </li>
+    
+
+    
+
     
 
     
@@ -120,7 +134,7 @@
 
     
     <li class="pure-menu-item">
-      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
     </li>
     
 
@@ -136,8 +150,14 @@
 
     
     <li class="pure-menu-item">
-      <a class="pure-menu-link" href="https://github.com/rgerganov" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
     </li>
+    
+
+    
+
+    
+
     
 
     
@@ -390,6 +410,9 @@ Let&rsquo;s see how that goes :)</p>
 </div>
 </div>
 <script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
 
 
 

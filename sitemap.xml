@@ -1,8 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>https://xakcop.com/post/vmw-kernel-debugging/</loc>
+    <lastmod>2019-03-07T16:33:12+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xakcop.com/post/</loc>
+    <lastmod>2019-03-07T16:33:12+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xakcop.com/</loc>
     <lastmod>2019-03-07T16:33:12+02:00</lastmod>
   </url>
   
@@ -27,15 +38,11 @@
   </url>
   
   <url>
-    <loc>https://xakcop.com/post/</loc>
-    <lastmod>2019-03-07T16:33:12+02:00</lastmod>
-    <priority>0</priority>
+    <loc>https://xakcop.com/categories/</loc>
   </url>
   
   <url>
-    <loc>https://xakcop.com/</loc>
-    <lastmod>2019-03-07T16:33:12+02:00</lastmod>
-    <priority>0</priority>
+    <loc>https://xakcop.com/tags/</loc>
   </url>
   
 </urlset>

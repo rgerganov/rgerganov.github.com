@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>random hacks</title>
-    <link>https://xakcop.com/index.xml</link>
+    <link>https://xakcop.com/</link>
     <description>Recent content on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2019. All rights reserved.</copyright>
     <lastBuildDate>Thu, 07 Mar 2019 16:33:12 +0200</lastBuildDate>
-    <atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Debugging the Linux kernel with VMware</title>
@@ -16,156 +18,8 @@
       <pubDate>Thu, 07 Mar 2019 16:33:12 +0200</pubDate>
       
       <guid>https://xakcop.com/post/vmw-kernel-debugging/</guid>
-      <description>
-
-&lt;p&gt;I am playing with emulated HID devices in Linux and found a kernel bug when using the &lt;code&gt;usb_f_hid&lt;/code&gt; and &lt;code&gt;dummy_hcd&lt;/code&gt; kernel modules.
-I won&amp;rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this
-particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Load &lt;code&gt;libcomposite&lt;/code&gt; and &lt;code&gt;dummy_hcd&lt;/code&gt; into the kernel&lt;/li&gt;
-&lt;li&gt;Create an emulated HID device with configfs&lt;/li&gt;
-&lt;li&gt;Write something to &lt;code&gt;/dev/hidg0&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;After executing step 3, the machine hangs in a way which makes it clear that it&amp;rsquo;s not a userspace problem but a kernel one.&lt;/p&gt;
-
-&lt;p&gt;I know that &lt;a href=&#34;https://www.vmware.com/products/workstation-pro.html&#34;&gt;VMware Workstation&lt;/a&gt; has support for kernel debugging, so
-I thought this is a great chance to give it a try.
-I loaded Ubuntu 18.04 into a VM and executed the steps above. The VM hanged and the corresponding &lt;code&gt;vmware-vmx&lt;/code&gt; process in the
-host OS went to 100% CPU usage. This means that when the problem occurs, the kernel goes into some kind of busy loop.
-Let&amp;rsquo;s see how we can debug this further.&lt;/p&gt;
-
-&lt;h2 id=&#34;vm-config&#34;&gt;VM config&lt;/h2&gt;
-
-&lt;p&gt;VMware Workstation has a nice feature which allows to debug the Linux kernel running inside the VM with &lt;code&gt;gdb&lt;/code&gt; on the host.
-This is enabled by adding a single line to the VM&amp;rsquo;s configuration file:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;debugStub.listen.guest64 = &amp;quot;TRUE&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now when the VM is started, port 8864 is opened on the host and we can connect to it with &lt;code&gt;gdb&lt;/code&gt; for remote debugging.&lt;/p&gt;
-
-&lt;h2 id=&#34;preparing-the-guest-os&#34;&gt;Preparing the guest OS&lt;/h2&gt;
-
-&lt;p&gt;First, we want to disable &lt;a href=&#34;https://en.wikipedia.org/wiki/Address_space_layout_randomization&#34;&gt;KASLR&lt;/a&gt;
-as it will make the debugging harder. This is done by booting the kernel with the &lt;code&gt;nokaslr&lt;/code&gt; option.&lt;/p&gt;
-
-&lt;p&gt;Open &lt;code&gt;/etc/default/grub&lt;/code&gt;, find the line starting with &lt;code&gt;GRUB_CMDLINE_LINUX_DEFAULT&lt;/code&gt; and append &lt;code&gt;nokaslr&lt;/code&gt; at the end.
-Then update GRUB:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;sudo update-grub&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;and reboot the VM.&lt;/p&gt;
-
-&lt;p&gt;Next, we want to obtain debug symbols for the running kernel and its modules.
-For Ubuntu there is a dedicated &lt;a href=&#34;https://wiki.ubuntu.com/Debug%20Symbol%20Packages#Getting_-dbgsym.ddeb_packages&#34;&gt;repository&lt;/a&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;echo &amp;quot;deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse
-deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse
-deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse&amp;quot; | \
-sudo tee -a /etc/apt/sources.list.d/ddebs.list
-sudo apt install ubuntu-dbgsym-keyring
-sudo apt-get update
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Install kernel with debug symbols:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get install linux-image-`uname -r`-dbgsym
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Copy the following files to the host OS as we need to load them into &lt;code&gt;gdb&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/usr/lib/debug/boot/vmlinux-4.15.0-45-generic
-/usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/udc/udc-core.ko
-/usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/function/usb_f_hid.ko
-dummy_hcd.ko
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: &lt;code&gt;dummy_hcd&lt;/code&gt; is missing in Ubuntu (see this &lt;a href=&#34;https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1073089&#34;&gt;bug&lt;/a&gt;), I built it by myself.&lt;/p&gt;
-
-&lt;h2 id=&#34;using-gdb&#34;&gt;Using GDB&lt;/h2&gt;
-
-&lt;p&gt;Now that we have the debug symbols, we are ready to fire off &lt;code&gt;gdb&lt;/code&gt; in the host OS:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gdb vmlinux-4.15.0-45-generic
-
-(gdb) set architecture i386:x86-64
-(gdb) target remote localhost:8864
-(gdb) c
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Hitting Ctrl+C will pause the VM:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://xakcop.com/images/debug-vm.png&#34; title=&#34;debugvm&#34;&gt;
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/debug-vm-small.png&#34; alt=&#34;debugvm&#34;&gt;
-&lt;/div&gt;
-&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;so we can inspect the state in the debugger.&lt;/p&gt;
-
-&lt;p&gt;We also need to load the symbols for the kernel modules that we want to debug.
-However, modules can be dynamically loaded at any address and we need to feed this information into &lt;code&gt;gdb&lt;/code&gt;.
-Let&amp;rsquo;s take for example &lt;code&gt;usb_f_hid&lt;/code&gt;. We can get the corresponding addresses in the guest OS like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ cd /sys/module/usb_f_hid/sections
-$ sudo cat .text .data .bss 
-0xffffffffc06d7000
-0xffffffffc06da000
-0xffffffffc06da740
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now we can add the symbol file in &lt;code&gt;gdb&lt;/code&gt; using the addresses from above:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;(gdb) add-symbol-file usb_f_hid.ko 0xffffffffc06d7000 -s .data 0xffffffffc06da000 -s .bss 0xffffffffc06da740
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We do the same for &lt;code&gt;udc-core&lt;/code&gt; and &lt;code&gt;dummy_hcd&lt;/code&gt;.
-Now that we have all symbols loaded, we can trigger the bug in the guest OS and then hit Ctrl+C in &lt;code&gt;gdb&lt;/code&gt; to
-inspect the backtrace:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;^C
-Program received signal SIGINT, Interrupt.
-0xffffffff810de405 in rep_nop () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:647
-647 /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h: No such file or directory.
-(gdb) bt
-#0  0xffffffff810de405 in rep_nop () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:647
-#1  cpu_relax () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:652
-#2  virt_spin_lock (lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/qspinlock.h:69
-#3  native_queued_spin_lock_slowpath (lock=0xffff88007196984c, val=1) at /build/linux-uQJ2um/linux-4.15.0/kernel/locking/qspinlock.c:305
-#4  0xffffffff8199f407 in pv_queued_spin_lock_slowpath (val=&amp;lt;optimized out&amp;gt;, lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/paravirt.h:669
-#5  queued_spin_lock_slowpath (val=&amp;lt;optimized out&amp;gt;, lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/qspinlock.h:30
-#6  queued_spin_lock (lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/include/asm-generic/qspinlock.h:90
-#7  do_raw_spin_lock_flags (flags=&amp;lt;optimized out&amp;gt;, lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/include/linux/spinlock.h:172
-#8  __raw_spin_lock_irqsave (lock=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/include/linux/spinlock_api_smp.h:119
-#9  _raw_spin_lock_irqsave (lock=0xffff88007196984c) at /build/linux-uQJ2um/linux-4.15.0/kernel/locking/spinlock.c:152
-#10 0xffffffffc06d7410 in f_hidg_req_complete (ep=&amp;lt;optimized out&amp;gt;, req=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/drivers/usb/gadget/function/f_hid.c:328
-#11 0xffffffffc06a390a in usb_gadget_giveback_request ()
-#12 0xffffffffc06cdff2 in dummy_queue ()
-#13 0xffffffffc06a2b96 in usb_ep_queue ()
-#14 0xffffffffc06d7eb6 in f_hidg_write (file=&amp;lt;optimized out&amp;gt;, buffer=&amp;lt;optimized out&amp;gt;, count=5, offp=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/drivers/usb/gadget/function/f_hid.c:394
-#15 0xffffffff8127730b in __vfs_write (file=&amp;lt;optimized out&amp;gt;, p=&amp;lt;optimized out&amp;gt;, count=&amp;lt;optimized out&amp;gt;, pos=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:481
-#16 0xffffffff812774d1 in vfs_write (file=0xffff880077b77c00, buf=0x55841858c7c0 &amp;quot;fira\n&amp;quot;, count=&amp;lt;optimized out&amp;gt;, pos=0xffffc90000bbbef8) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:569
-#17 0xffffffff81277725 in SYSC_write (count=&amp;lt;optimized out&amp;gt;, buf=&amp;lt;optimized out&amp;gt;, fd=&amp;lt;optimized out&amp;gt;) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:615
-#18 SyS_write (fd=&amp;lt;optimized out&amp;gt;, buf=94025832515520, count=5) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:607
-#19 0xffffffff81003ae3 in do_syscall_64 ()
-#20 0xffffffff81a00081 in entry_SYSCALL_64 () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/entry/entry_64.S:237
-#21 0x00007f8e8d85d760 in ?? ()
-#22 0x00007f8e8d85e2a0 in ?? ()
-#23 0x0000000000000005 in irq_stack_union ()
-Backtrace stopped: previous frame inner to this frame (corrupt stack?)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This reveals a deadlock involving &lt;code&gt;hidg-&amp;gt;write_spinlock&lt;/code&gt; in &lt;code&gt;f_hid.c&lt;/code&gt; which explains why the CPU goes to 100% when the bug occurs.
-The spinlock is acquired in the &lt;code&gt;f_hidg_write()&lt;/code&gt; function before calling &lt;code&gt;usb_ep_queue()&lt;/code&gt; which callbacks to &lt;code&gt;f_hidg_req_complete()&lt;/code&gt; which
-tries to acquire the same spinlock again.&lt;/p&gt;
-
-&lt;p&gt;My attempt to fix this bug is this &lt;a href=&#34;https://www.spinics.net/lists/linux-usb/msg177735.html&#34;&gt;patch&lt;/a&gt; which I submitted to the maintainers of the USB subsytem.
-Let&amp;rsquo;s see how that goes :)&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE:&lt;/strong&gt; My patch has been &lt;a href=&#34;https://github.com/torvalds/linux/commit/072684e8c58d17e853f8e8b9f6d9ce2e58d2b036&#34;&gt;merged&lt;/a&gt; in Linux 5.1-rc3&lt;/p&gt;
-</description>
+      <description>I am playing with emulated HID devices in Linux and found a kernel bug when using the usb_f_hid and dummy_hcd kernel modules. I won&amp;rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:
+ Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0  After executing step 3, the machine hangs in a way which makes it clear that it&amp;rsquo;s not a userspace problem but a kernel one.</description>
     </item>
     
     <item>
@@ -174,193 +28,9 @@ Let&amp;rsquo;s see how that goes :)&lt;/p&gt;
       <pubDate>Sat, 19 Jan 2019 10:49:37 +0200</pubDate>
       
       <guid>https://xakcop.com/post/ctrl-air-purifier/</guid>
-      <description>
-
-&lt;p&gt;The air pollution in Sofia is really high during the winter, so I decided to buy an air
-purifier for my home. After some short research, I bought Philips AC2729:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://xakcop.com/images/ac2729.jpg&#34; title=&#34;ac2729&#34;&gt;
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/ac2729-small.jpg&#34; alt=&#34;ac2729&#34;&gt;
-&lt;/div&gt;
-&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;it can purify and humidify the air at the same time, show particulate matter (PM 2.5) /
-humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows
-remote control with a mobile app. Being able to control the device with my phone sounds
-pretty cool but after reading so many stories about the so called
-&lt;a href=&#34;https://twitter.com/internetofshit&#34;&gt;Internet of Shit&lt;/a&gt;, I thought it&amp;rsquo;d be a good idea to
-inspect what kind of data this thing sends and ultimately create my own tool to control
-it. It&amp;rsquo;d be a fun side project as well :)&lt;/p&gt;
-
-&lt;h2 id=&#34;network-analysis&#34;&gt;Network analysis&lt;/h2&gt;
-
-&lt;p&gt;The first step of course is capturing the network traffic that comes in and goes out from
-the device. There are several ways to do this with a PC and good Wi-Fi adapter but I took
-advantage of the built-in
-&lt;a href=&#34;https://wiki.mikrotik.com/wiki/Manual:Tools/Packet_Sniffer&#34;&gt;packet sniffer&lt;/a&gt; that my
-router has and recorded the traffic during the initial setup of the purifier and some
-interactions with the &lt;a href=&#34;https://play.google.com/store/apps/details?id=com.freshideas.airindex&#34;&gt;mobile app&lt;/a&gt;.
-Then I opened the recorded .pcap file in Wireshark and quickly realized couple of things:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;the device is sending data to a Philips server (www.ecdinterface.philips.com),
-no surprise here &amp;hellip;&lt;/li&gt;
-&lt;li&gt;the device runs an HTTP server and is controlled via some REST API from the mobile app&lt;/li&gt;
-&lt;li&gt;it uses plain HTTP with some custom encryption for the request/response body&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;I can easily disable the phone-home functionality by putting a firewall rule in my router
-and limit all traffic to my local network. But I also want to understand how the device
-is controlled and for this I need to decrypt the network traffic between the purifier and
-the mobile app.&lt;/p&gt;
-
-&lt;p&gt;Let&amp;rsquo;s take a closer look to the initial interaction between those two
-parties:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;PUT /di/v1/products/0/security HTTP/1.1
-content-type: application/json
-connection: close
-User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Pixel XL Build/PQ1A.181205.002.A1)
-Host: 192.168.0.17
-Accept-Encoding: gzip
-Content-Length: 269
-
-{&amp;quot;diffie&amp;quot;:&amp;quot;4FB7FC5543219711B7144FDA72E4A2...&amp;quot;}
-
-HTTP/1.1 200
-Content-Length: 343
-Content-Type: application/json
-Connection: Close
-
-{&amp;quot;hellman&amp;quot;:&amp;quot;4a5008cbc6e4523f27e...&amp;quot;,
- &amp;quot;key&amp;quot;:&amp;quot;9d90df8e281855117467e09fa75de7aa60097c16657a5cc04b094e7dbb4b0518&amp;quot;}
-
-GET /di/v1/products/1/device HTTP/1.1
-content-type: application/json
-connection: close
-User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Pixel XL Build/PQ1A.181205.002.A1)
-Host: 192.168.0.17
-Accept-Encoding: gzip
-
-HTTP/1.1 200
-Content-Length: 128
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Connection: Close
-
-SwZyJzgE66DpOjL6nshHS/xjF9VHxL7Fg0XjHDmDtNhBBBMC4FeuJzBQiQx8QFcIlyoOTaEPUq
-QqDmN1f2we0MRjSjyt4aEenNlvtvj/vCa+e15btQcZYWcqTHvpr1Pb
-
-POST /di/v1/products/1/air HTTP/1.1
-content-type: application/json
-connection: close
-User-Agent: Dalvik/2.1.0 (Linux; U; Android 9; Pixel XL Build/PQ1A.181205.002.A1)
-Host: 192.168.0.17
-Accept-Encoding: gzip
-Content-Length: 65
-
-Mt32GhsP00A6cDdHf+8vBMMKsJU/rZsD7onyiTjNDxPlRhepKspv/lw9GKhhYc6O
-
-HTTP/1.1 200
-Content-Length: 256
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Connection: Close
-
-NbV7wqswB4p3/yV6KSBN92c9sLy3tOjbUaCWqfddss1oIUNGl3EPacivoqROasGPS9x8VRwRIV734jQ0Q
-Amm/0OehccirajReq0/yEcwV7jo+gbkEIaIUNdVE/XccXptR3VTsO3W/7ge5U9wM7NM9jAz7BgvkKoEtjg
-7+3Rs7M9lgiTpcDr85b5NMo/tIpzeKM7+CMtmI9toOaDmnjxqoJO1JhpAk7VP5lCO5m/iFfFWPgeWYSlvw
-YK6SGVqzqlP
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The first request to &lt;code&gt;/di/v1/products/0/security&lt;/code&gt; is plain text and it seems to be a
-&lt;a href=&#34;https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange&#34;&gt;Diffie-Hellman&lt;/a&gt; key
-exchange (truncated by me for readability). The following requests are base64 encoded and
-decoding them doesn&amp;rsquo;t produce anything meaningful. So it looks like a secret key is
-exchanged at the beginning and then used to encrypt further communication.
-There is only one way to verify this theory &amp;ndash; reverse engineering the mobile app!&lt;/p&gt;
-
-&lt;h2 id=&#34;reversing-the-original-app&#34;&gt;Reversing the original app&lt;/h2&gt;
-
-&lt;p&gt;The mobile app is Air Matters and I downloaded its Android version which is an apk file.
-Then I used the &lt;a href=&#34;https://github.com/skylot/jadx&#34;&gt;jadx&lt;/a&gt; tool to decompile it. With a few
-greps over the decompiled sources, I found the relevant encryption/decryption classes:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;com/philips/cdp2/commlib/lan/communication/ExchangeKeyRequest.java
-com/philips/cdp/dicommclient/security/EncryptionUtil.java
-com/philips/cdp/dicommclient/security/ByteUtil.java
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With this I have been able to recover the following steps:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;The app and the device establish a shared secret using the Diffie-Hellman algorithm&lt;/li&gt;
-&lt;li&gt;The device generates a session key and encrypts it with AES using the shared secret
-from step 1 as a key. The encrypted session key is set in the &lt;code&gt;key&lt;/code&gt; property of the
-response message from &lt;code&gt;PUT /di/v1/products/0/security&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;The session key from step 2 is used to encrypt/decrypt with AES all further requests
-and responses&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;I also found the &lt;code&gt;G&lt;/code&gt; and &lt;code&gt;P&lt;/code&gt; values used for Diffie-Hellman in &lt;code&gt;ByteUtil.java&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;static final String GVALUE = &amp;quot;A4D1CBD5C3FD34126765A442EFB99905F8104DD258AC507FD6406CFF14266D31266FEA1E5C41564B777E690F5504F213160217B4B01B886A5E91547F9E2749F4D7FBD7D3B9A92EE1909D0D2263F80A76A6A24C087A091F531DBF0A0169B6A28AD662A4D18E73AFA32D779D5918D08BC8858F4DCEF97C2A24855E6EEB22B3B2E5&amp;quot;;
-static final String PVALUE = &amp;quot;B10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4371&amp;quot;;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;However, this is not enough to find the shared secret which is being established.
-In fact, &lt;code&gt;G&lt;/code&gt; and &lt;code&gt;P&lt;/code&gt; are public values. Cracking Diffie-Hellman boils down to solving the
-discrete logarithm problem which is to find a value &lt;code&gt;&amp;quot;a&amp;quot;&lt;/code&gt; such that &lt;code&gt;G^a mod P=A&lt;/code&gt;.
-We already have G and P from the decompiled source and we also have &lt;code&gt;A&lt;/code&gt; which corresponds
-to the &lt;code&gt;&amp;quot;diffie&amp;quot;&lt;/code&gt; property in the network request. The shared secret is equal to
-&lt;code&gt;B^a mod P&lt;/code&gt; where &lt;code&gt;B&lt;/code&gt; corresponds to the &lt;code&gt;&amp;quot;hellman&amp;quot;&lt;/code&gt; property in the network response.
-The value &lt;code&gt;&amp;quot;a&amp;quot;&lt;/code&gt; is by definition a big random number which makes solving &lt;code&gt;G^a mod P=A&lt;/code&gt; very
-hard. Let&amp;rsquo;s see how this random exponent is generated in &lt;code&gt;ByteUtil.java&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public static String generateRandomNum() {
-    return String.valueOf((new SecureRandom().nextInt(2147483546) + 1) + 101);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It seems this random number is only 31 bits. It also seems that the person who wrote this
-didn&amp;rsquo;t know what he is doing :) Solving the discrete logarithm problem when &lt;code&gt;a&lt;/code&gt; is only
-31 bits turns out to be not hard at all. In fact, it can be solved for less than a second
-using the &lt;a href=&#34;https://en.wikipedia.org/wiki/Baby-step_giant-step&#34;&gt;Baby-step Giant-step&lt;/a&gt;
-algorithm. Check out my implementation at &lt;a href=&#34;https://github.com/rgerganov/dlp&#34;&gt;https://github.com/rgerganov/dlp&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;open-source-client&#34;&gt;Open source client&lt;/h2&gt;
-
-&lt;p&gt;After finding the session key and decrypting the entire traffic, I have been able to
-implement my own fully-featured command line
-&lt;a href=&#34;https://github.com/rgerganov/py-air-control&#34;&gt;client&lt;/a&gt;. Check this out:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ ./airctrl.py 192.168.0.17
-[pwr]   Power: ON
-[pm25]  PM25: 4
-[rh]    Humidity: 32
-[rhset] Target humidity: 60
-[iaql]  Allergen index: 1
-[temp]  Temperature: 22
-[func]  Function: Purification &amp;amp; Humidification
-[mode]  Mode: M
-[om]    Fan speed: 2
-[aqil]  Light brightness: 100
-[wl]    Water level: 100
-[cl]    Child lock: False
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As an added bonus, it also shows the current temperature which is missing in the original
-mobile app :)&lt;/p&gt;
-
-&lt;h2 id=&#34;future-work&#34;&gt;Future work&lt;/h2&gt;
-
-&lt;p&gt;As I said the purifier has a phone-home functionality which is using another form of
-custom encryption but this time implemented in a native library.  Reversing this part
-will take more time but something tells me it may allow doing some crazy stuff ;)&lt;/p&gt;
-
-&lt;p&gt;Stay tuned!&lt;/p&gt;
-</description>
+      <description>The air pollution in Sofia is really high during the winter, so I decided to buy an air purifier for my home. After some short research, I bought Philips AC2729:
+ 
+it can purify and humidify the air at the same time, show particulate matter (PM 2.5) / humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows remote control with a mobile app. Being able to control the device with my phone sounds pretty cool but after reading so many stories about the so called Internet of Shit, I thought it&amp;rsquo;d be a good idea to inspect what kind of data this thing sends and ultimately create my own tool to control it.</description>
     </item>
     
     <item>
@@ -369,23 +39,10 @@ will take more time but something tells me it may allow doing some crazy stuff ;
       <pubDate>Wed, 22 Mar 2017 10:21:41 +0200</pubDate>
       
       <guid>https://xakcop.com/post/virt-usb-drive/</guid>
-      <description>&lt;p&gt;This is a PoC for something I call &amp;ldquo;virtual usb drive&amp;rdquo;. The drive is created on Linux using the
-&lt;a href=&#34;https://www.kernel.org/doc/Documentation/usb/mass-storage.txt&#34;&gt;MSG&lt;/a&gt; kernel module.
-Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&amp;rsquo;s pretty cool hack, so I decided
-to share it.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;DISCLAIMER&lt;/strong&gt;: This is unofficial and unsupported, use it at your own risk.&lt;/p&gt;
-
-&lt;p&gt;Here is a demo:&lt;/p&gt;
-
-
-&lt;div style=&#34;position: relative; padding-bottom: 56.25%; padding-top: 30px; height: 0; overflow: hidden;&#34;&gt;
-  &lt;iframe src=&#34;//www.youtube.com/embed/RSxUyQDnd2w&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%;&#34; allowfullscreen frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
- &lt;/div&gt;
-
-
-&lt;p&gt;You can find the supporting scripts &lt;a href=&#34;https://gist.github.com/rgerganov/df442733da54ad104bf03d81355a845e&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-</description>
+      <description>This is a PoC for something I call &amp;ldquo;virtual usb drive&amp;rdquo;. The drive is created on Linux using the MSG kernel module. Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&amp;rsquo;s pretty cool hack, so I decided to share it.
+DISCLAIMER: This is unofficial and unsupported, use it at your own risk.
+Here is a demo:
+  You can find the supporting scripts here.</description>
     </item>
     
     <item>
@@ -394,55 +51,8 @@ to share it.&lt;/p&gt;
       <pubDate>Sun, 29 Jan 2017 13:27:39 +0200</pubDate>
       
       <guid>https://xakcop.com/post/cloning-rfid/</guid>
-      <description>
-
-&lt;p&gt;This post summarizes my experience with cloning RFID cards that I am using on daily basis.
-There is nothing new here, just a summary of well-known hacks that I found on the internet.&lt;/p&gt;
-
-&lt;h3 id=&#34;corporate-badge&#34;&gt;Corporate badge&lt;/h3&gt;
-
-&lt;p&gt;At work we use 125KHz passive RFID badges which are easy to clone.
-Each badge has unique ID, so the first step is to read this ID.
-I have been using this DIY &lt;a href=&#34;http://playground.arduino.cc/Main/DIYRFIDReader&#34;&gt;reader&lt;/a&gt; based on an Arduino:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://xakcop.com/images/rfid-reader.jpg&#34; title=&#34;rfid-reader&#34;&gt;
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/rfid-reader-small.jpg&#34; &gt;
-&lt;/div&gt;
-&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;By the way, I had to make some slight &lt;a href=&#34;https://gist.github.com/rgerganov/c8cec1f2c498c1e0786084bfdc1240b7&#34;&gt;changes&lt;/a&gt; to the firware to make it work.&lt;/p&gt;
-
-&lt;p&gt;Once you get the ID, you can &amp;ldquo;program&amp;rdquo; it on an ATtiny85 microcontroller as described &lt;a href=&#34;http://scanlime.org/2008/09/using-an-avr-as-an-rfid-tag/&#34;&gt;here&lt;/a&gt;.
-This is how my assembled clone looks like:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://xakcop.com/images/rfid-badge.jpg&#34; title=&#34;rfid-badge&#34;&gt;
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/rfid-badge-small.jpg&#34; &gt;
-&lt;/div&gt;
-&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;residential-entry&#34;&gt;Residential entry&lt;/h3&gt;
-
-&lt;p&gt;The building where I live (and many other buildings) has a front door which is opened with an NFC tag. I found that it is Mifare Classic 1k tag
-which has been cracked long time ago. Actually, it turned out that I don&amp;rsquo;t have to crack anything to create a clone because the tag had default keys.
-They were relying only on the fact that each tag has unique ID and the door opens when pre-recorded ID is shown.
-Some fine people in China are selling tags that you can program with whatever ID you want, so creating is a clone a simple matter of running &lt;code&gt;nfc-mfsetuid&lt;/code&gt;:&lt;/p&gt;
-
-&lt;script type=&#34;text/javascript&#34; src=&#34;https://asciinema.org/a/14.js&#34; id=&#34;asciicast-99020&#34; async&gt;&lt;/script&gt;
-
-&lt;h3 id=&#34;public-transport&#34;&gt;Public transport&lt;/h3&gt;
-
-&lt;p&gt;Turns out that Mifare Classic 1k is also being used for the public transport in Sofia. I managed to crack one of the old cards that I have &amp;ndash; it has been
-using a combination of default keys and &amp;ldquo;SofiaM&amp;rdquo;:&lt;/p&gt;
-
-&lt;script type=&#34;text/javascript&#34; src=&#34;https://asciinema.org/a/14.js&#34; id=&#34;asciicast-a1fjcus3zcgkxpvh3i72txy91&#34; async&gt;&lt;/script&gt;
-
-&lt;p&gt;However, some of the new cards for the subway manage to resist my cracking attempts.
-I guess they are using something more secure which is running an emulation of Mifare Classic.&lt;/p&gt;
-
-&lt;p&gt;UPDATE 03/15/2017: No, they are not. Keys have been disclosed &lt;a href=&#34;https://www.facebook.com/ilf.fb/posts/10158277574290527&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-</description>
+      <description>This post summarizes my experience with cloning RFID cards that I am using on daily basis. There is nothing new here, just a summary of well-known hacks that I found on the internet.
+Corporate badge At work we use 125KHz passive RFID badges which are easy to clone. Each badge has unique ID, so the first step is to read this ID. I have been using this DIY reader based on an Arduino:</description>
     </item>
     
     <item>
@@ -451,100 +61,8 @@ I guess they are using something more secure which is running an emulation of Mi
       <pubDate>Tue, 27 Sep 2016 11:19:21 +0300</pubDate>
       
       <guid>https://xakcop.com/post/mitm-stb/</guid>
-      <description>
-
-&lt;p&gt;My ISP is offering IPTV with a set-top-box (STB) device which is connected to
-the provider network and the TV itself:&lt;/p&gt;
-
-
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/stb-diagram.png&#34; alt=&#34;stb-diagram&#34;&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;The only &amp;ldquo;user interface&amp;rdquo; for the STB is the remote control.  I was curious to
-find out if the traffic between the STB and the provider is encrypted, so I
-decided to see what goes on the wire.  The easiest way to do this is to create
-an ethernet bridge between the provider and the STB and then capture the
-traffic.  I used my MacBook with a second USB Ethernet adapter. In OSX, an
-ethernet bridge is created like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    ifconfig bridge1 create
-    ifconfig bridge1 up
-    ifconfig bridge1 addm en4 addm en5
-    sysctl -w net.inet.ip.forwarding=1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I used Wireshark to capture the traffic and to my surprise there was no
-encryption at all. They have been using
-&lt;a href=&#34;https://en.wikipedia.org/wiki/Real_Time_Streaming_Protocol&#34;&gt;RTSP&lt;/a&gt; to switch
-between TV channels:&lt;/p&gt;
-
-
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/wireshark-stb.png&#34; alt=&#34;wireshark capture&#34;&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;Every channel has unique ID like &lt;code&gt;ch12032017033910402807&lt;/code&gt;. The ISP is also
-offering some paid channels (like HBO) which I am not subscribed to.  However, I
-managed to find the complete list of channel IDs in the traffic dump, including
-the ones that I am not subscribed to.  In other words, the entire security for
-the paid channels is done on the client side (by the STB) instead on the server
-side.  And you can watch every channel as long as you know its ID.&lt;/p&gt;
-
-&lt;p&gt;At this point my first idea was to replace the STB with my own computer which
-can talk their protocol and play the entire set of channels.  However, that
-would be a lot of work which is not fun doing. A better solution would be to
-create a man-in-the-middle between the STB and the provider which can modify the
-traffic and thus substitute some crappy channels with the paid channels. What a
-great opportunity to use my old Raspberry Pi!&lt;/p&gt;
-
-&lt;p&gt;The classic MitM with ARP spoofing didn&amp;rsquo;t work out because there was MAC filter
-on the provider side.  Long story short, I created my own tool
-&lt;a href=&#34;https://github.com/rgerganov/nfqsed&#34;&gt;nfqsed&lt;/a&gt; which can transparently modify
-network traffic using a predefined set of substitution rules. I used my USB
-Ethernet adapter to turn my Raspberry Pi into an ethernet bridge. The built-in
-network adapter is connected to the provider and the USB adapter is connected
-to the STB. This is how it looks like from the top:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://xakcop.com/images/stb-rpi.jpg&#34; title=&#34;stb-rpi&#34;&gt;
-&lt;div class=&#34;pure-u-1-1&#34;&gt;
-  &lt;img class=&#34;pure-img&#34; src=&#34;https://xakcop.com/images/stb-rpi-small.jpg&#34; &gt;
-&lt;/div&gt;
-&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Below are the relevant config files on the Raspberry Pi which setup the
-networking and configure nfqsed to replace one TV channel with another:&lt;/p&gt;
-
-&lt;h4 id=&#34;etc-network-interfaces&#34;&gt;/etc/network/interfaces&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;iface br0 inet static
-    bridge_ports eth0 eth1
-    address 192.168.1.10
-    netmask 255.255.255.0
-    gateway 192.168.1.1
-    dns-nameservers 8.8.8.8
-    up iptables -A FORWARD -p tcp --destination-port 554 -j NFQUEUE --queue-num 0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;etc-rc-local&#34;&gt;/etc/rc.local&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;/home/pi/nfqsed/nfqsed -f /home/pi/rules.txt &amp;amp;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;home-pi-rules-txt&#34;&gt;/home/pi/rules.txt&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;# Fen TV / HBO HD
-/ch13121216533621227255/ch12092914401822894191
-# Folklor TV / HBO Comedy HD
-/ch11123010551095204329/ch12092914413728185379
-# Tqnkov / Cinemax
-/ch11123010550900907719/ch11123010551005188322
-# DM Sat / Cinemax 2
-/ch11123010550925360552/ch11123010551067094950
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself:
+ The only &amp;ldquo;user interface&amp;rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.</description>
     </item>
     
   </channel>
