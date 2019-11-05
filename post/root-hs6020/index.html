@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Rooting HS6020 IPTV STB &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2019. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Rooting HS6020 IPTV STB</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>05 Nov 2019, 17:12</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  <p>One of my co-workers brought a very old IPTV set-top-box in the office.
+The box was distributed by one of the very first IPTV providers in Sofia &ndash; Megalan.
+I remember using one of those back in 2009.
+We decided to see how difficult is to root 10+ years old hardware and the fun began!</p>
+
+<p>The box is running both telnet and ssh but there is no default password.
+The next thing we tried, of course, is connecting a serial console.
+With some trial and error we found the pins on the PCB and used an Arduino board as
+USB-to-serial converter:</p>
+
+<p><a href="/images/hs6020.jpg" title="hs6020">
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/hs6020-small.jpg" alt="ac2729">
+</div>
+</a></p>
+
+<pre><code>screen /dev/ttyACM1 115200
+</code></pre>
+
+<pre><code>Common Firmware Environment (CFE) version 1.1 for BCM97401C1, (Little Endian Mode)
+Build Date: Wed Jan 23 13:31:55     2008 (fangyu@hansunte-d6fcaf)
+Copyright (C) 2000-2007 Broadcom Corporation.
+
+Initializing Arena.
+Initializing Devices.
+env loaded
+Initializing Devices finish.
+CPU speed: 297MHz
+Total memory: 0x8000000 bytes (128MB)
+
+...
+
+(none) login: 
+</code></pre>
+
+<p>The device boots and we get a nice login prompt.
+It&rsquo;s a Broadcom SoC and uses something called Common Firmware Environment (CFE) to boot the linux kernel.
+After a few google searches, I found that CFE can be interrupted with Ctrl+C which gives us something like a bootloader shell:</p>
+
+<pre><code>Automatic startup canceled via Ctrl-C
+CFE&gt; printenv
+Variable Name        Value
+-------------------- --------------------------------------------------
+        BOOT_CONSOLE uart0
+         ETH0_HWADDR 00:18:95:10:10:6B
+             STARTUP boot -z -elf flash0.kernel0: 'root=/dev/mtdblock0 rootfstype=jffs2 mem=64m '
+         CFE_VERSION 1.1.0
+       CFE_BOARDNAME BCM97401C1
+      CFE_MEMORYSIZE 128
+*** command status = 0
+</code></pre>
+
+<p>The printenv command reveals the <code>STARTUP</code> variable which shows the exact boot command.
+The last parameter of the boot command looks like a kernel cmdline.
+Let&rsquo;s try and run the shell instead of the init process:</p>
+
+<pre><code>CFE&gt; boot -z -elf flash0.kernel0: 'root=/dev/mtdblock0 rootfstype=jffs2 mem=64m init=/bin/sh'
+</code></pre>
+
+<p>The device boots and we have a root shell :)</p>
+
+<pre><code class="language-shell"># cat /etc/shadow
+root:BGOfOe8QJYuyA:0:0:root:/root:/bin/sh
+bin:*:1:1:bin:/bin:/dev/null
+daemon:*:2:2:daemon:/sbin:/dev/null
+adm:*:3:4:adm:/var/tmp:/dev/null
+ftp:*:14:50:FTP User:/var/tmp:/dev/null
+nobody:*:99:99:Nobody:/:/dev/null
+rpcuser:x:29:29:RPC Service User:/var/tmp:/dev/null
+nfsnobody:x:65534:65534:Anonymous NFS User:/var/tmp:/dev/null
+</code></pre>
+
+<p>The hash for the root password is <code>BGOfOe8QJYuyA</code> which is a DES hash.
+I tried a quick dictionary attack on this hash without success.
+This doesn&rsquo;t matter because the file system is writable and we can replace the hash with whatever we want.
+After changing the hash and rebooting, we can login on telnet:</p>
+
+<pre><code class="language-shell">telnet 10.10.20.244 
+Trying 10.10.20.244...
+Connected to 10.10.20.244.
+Escape character is '^]'.
+(none) login: root
+Password: 
+# whoami
+root
+# cat /proc/cpuinfo
+system type             : BCM97xxx Settop Platform
+processor               : 0
+cpu model               : Brcm7401 V0.0
+cpu MHz                 : 295.93
+BogoMIPS                : 295.93    ( udelay_val : 147968  HZ = 1000 )
+wait instruction        : yes
+microsecond timers      : yes
+tlb_entries             : 32
+extra interrupt vector  : yes
+hardware watchpoint     : no
+ASEs implemented        :
+VCED exceptions         : not available
+VCEI exceptions         : not available
+RAC setting             : I/D-RAC enabled
+unaligned access        : 6
+# uname -a
+Linux (none) 2.6.12-5.0-brcmstb #45 Sat Dec 6 21:52:44 EST 2008 7401c0 unknown
+</code></pre>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/vmw-kernel-debugging/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/vmw-kernel-debugging/">Debugging the Linux kernel with VMware</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+

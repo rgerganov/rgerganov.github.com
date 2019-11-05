@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2019. All rights reserved.</copyright>
-    <lastBuildDate>Thu, 07 Mar 2019 16:33:12 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 05 Nov 2019 17:12:08 +0200</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Rooting HS6020 IPTV STB</title>
+      <link>https://xakcop.com/post/root-hs6020/</link>
+      <pubDate>Tue, 05 Nov 2019 17:12:08 +0200</pubDate>
+      
+      <guid>https://xakcop.com/post/root-hs6020/</guid>
+      <description>One of my co-workers brought a very old IPTV set-top-box in the office. The box was distributed by one of the very first IPTV providers in Sofia &amp;ndash; Megalan. I remember using one of those back in 2009. We decided to see how difficult is to root 10+ years old hardware and the fun began!
+The box is running both telnet and ssh but there is no default password. The next thing we tried, of course, is connecting a serial console.</description>
+    </item>
     
     <item>
       <title>Debugging the Linux kernel with VMware</title>
