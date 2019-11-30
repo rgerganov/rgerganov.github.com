@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2019. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 05 Nov 2019 17:12:08 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 30 Nov 2019 11:04:38 +0200</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Controlling purifiers over the internet</title>
+      <link>https://xakcop.com/post/cloud-air-purifier/</link>
+      <pubDate>Sat, 30 Nov 2019 11:04:38 +0200</pubDate>
+      
+      <guid>https://xakcop.com/post/cloud-air-purifier/</guid>
+      <description>Last time I reverse engineered how AirMatters controls air purifiers which are in the same local network. This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.
+Network analysis The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters. The application loads its CA certificates from /resources/assets and tries to establish a trust chain to them.</description>
+    </item>
     
     <item>
       <title>Rooting HS6020 IPTV STB</title>

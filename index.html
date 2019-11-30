@@ -208,10 +208,50 @@
 
 <div class="header">
   <h1>random hacks</h1>
-  <h2></h2>
+  <h2>reverse engineering, hardware hacking, etc.</h2>
 </div>
 
 <div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="https://xakcop.com/post/cloud-air-purifier/">Controlling purifiers over the internet</a></h2>
+
+    <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>30 Nov 2019, 11:04</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  </header>
+
+  <p>
+  Last time I reverse engineered how AirMatters controls air purifiers which are in the same local network. This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.
+Network analysis The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters. The application loads its CA certificates from /resources/assets and tries to establish a trust chain to them.
+  </p>
+
+  
+  <footer>
+    <a href="/post/cloud-air-purifier/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
+
   
     <article>
   <header>

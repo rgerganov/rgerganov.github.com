@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Controlling purifiers over the internet &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2019. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Controlling purifiers over the internet</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>30 Nov 2019, 11:04</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  
+
+<p><a href="/post/ctrl-air-purifier/">Last time</a> I reverse engineered how <a href="https://play.google.com/store/apps/details?id=com.freshideas.airindex">AirMatters</a> controls air purifiers which are in the same local network.
+This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.</p>
+
+<h2 id="network-analysis">Network analysis</h2>
+
+<p>The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters.
+The application loads its CA certificates from <code>/resources/assets</code> and tries to establish a trust chain to them.
+My favourite tool for sniffing SSL traffic is <code>mitmproxy</code>, so I simply took <code>~/.mitmproxy/mitmproxy-ca-cert.cer</code> from my machine and re-packaged AirMatters with it.</p>
+
+<p>This is what I found after capturing the network traffic:</p>
+
+<ol>
+<li>Calling the cloud services requires logging with <code>client_id</code> and <code>client_key</code> first.</li>
+<li>AirMatters is using hardcoded credentials to provision a new account and obtain <code>client_id</code> and <code>client_key</code></li>
+<li>Every request contains an <code>Authorization</code> HTTP header which is verified by the server</li>
+<li>You need to pair the <code>client_id</code> with the purifier&rsquo;s <code>device_id</code> and then you can control it over the internet. The pairing is done by sending a special pairing request to the device and another pairing request to the corresponding cloud service.</li>
+</ol>
+
+<p>The problem with this pairing mechanism is that it is completely silent and doesn&rsquo;t require any physical interaction with the device. This means that an attacker needs one time network access to your device to pwn it forever. As far as I can tell, there is no way to &ldquo;unpair&rdquo; a device or to see how many accounts your device is paired with.</p>
+
+<p>The only missing piece in the above is how the <code>Authorization</code> HTTP header is calculated. This is how it looks like:</p>
+
+<pre><code>Authorization: CBAuth Type=&quot;SSO&quot;, Client=&quot;000000fff10af31f&quot;, RequestNr=&quot;2&quot;, Nonce=&quot;kj3PUx56Cpo3UdcIiICoPQ==&quot;, SSOToken=&quot;kcK0TgzC..&quot;, Authentication=&quot;XAR9WB443KTDT0A7pNUQZA==&quot;
+</code></pre>
+
+<p>We get <code>SSOToken</code> and <code>Nonce</code> from the response of the login request. The <code>Authentication</code> is 16 bytes base64 encoded value which is a calculated in <code>libICPClient.so</code>.</p>
+
+<h2 id="reversing-libicpclient-so">Reversing <code>libICPClient.so</code></h2>
+
+<p>I used <a href="https://ghidra-sre.org/">Ghidra</a> to reverse engineer this native library and find how the authentication bytes are computed.
+This is how the relevant function looks like after being decompiled:</p>
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/key1.png" alt="ghidra-key1">
+</div>
+
+<p>It does SHA1 hash of client_id, host, sso_key, the request number, nonce and then it takes the first 16 bytes of the digest:</p>
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/key2.png" alt="ghidra-key2">
+</div>
+
+<p>And this is how I implemented it in Python:</p>
+
+<pre><code class="language-python">m = hashlib.sha1()
+m.update(b'\x05')
+m.update(client_id.encode('ascii'))
+m.update(host.encode('ascii'))
+m.update(base64.b64decode(sso_key))
+m.update(struct.pack('&lt;I', request_num))
+m.update(base64.b64decode(nonce))
+key = m.digest()[:16]
+auth = base64.b64encode(key).decode('ascii')
+</code></pre>
+
+<h2 id="open-source-client">Open source client</h2>
+
+<p>With this I put together <code>cloudctrl</code> which can be used together with <code>airctrl</code> to provision accounts, pair and control purifiers over the internet.
+Check out the <a href="https://github.com/rgerganov/py-air-control/blob/master/README.md">README</a> of my project for more information.</p>
+
+<h2 id="disclosure">Disclosure</h2>
+
+<p>After publishing my previous post, I have been contacted by Philips and they told me about their <a href="https://www.philips.com/a-w/security/coordinated-vulnerability-disclosure.html">coordinated vulnerability disclosure</a> process.
+So this time I coordinated my new findings with them before making it public. As a result they put me into their <a href="https://www.philips.com/a-w/security/coordinated-vulnerability-disclosure/hall-of-honors.html">hall of honors</a> :)</p>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/root-hs6020/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/root-hs6020/">Rooting HS6020 IPTV STB</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+
