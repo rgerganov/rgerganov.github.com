@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Cloning RSA tokens with Frida &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2019. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Cloning RSA tokens with Frida</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>12 Dec 2019, 10:13</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  <p>At work we are using <a href="https://en.wikipedia.org/wiki/RSA_SecurID">RSA SecurID</a> for login to corporate services.
+RSA provides software tokens which are mobile applications that generate one-time passwords that change every minute or so.
+These applications are closed source and they use proprietary protocol to provision the token.
+This basically means that you are vendor locked-in with something that relies on security through obscurity.</p>
+
+<p>I wanted to have an open-source implementation of RSA SecurID and until now I have been using <a href="https://github.com/cernekee/stoken">stoken</a>
+together with <a href="https://github.com/dlenski/rsa_ct_kip">rsa_ct_kip</a> for token provisioning. This has been working great until
+my employer decided to switch to the new <a href="https://play.google.com/store/apps/details?id=com.rsa.via">RSA SecurID Authenticate</a> app which
+uses some different kind of token provisioning that doesn&rsquo;t work with <code>rsa_ct_kip</code>. At this point I have two options:</p>
+
+<ol>
+<li>Reverse engineer the mobile app and find how the provisioning is done.
+I already did this for the old <a href="https://play.google.com/store/apps/details?id=com.rsa.securidapp">app</a>
+and this was my contribution to the <code>rsa_ct_kip</code> project.</li>
+<li>Provision a token with the new app on a rooted phone and then &ldquo;export&rdquo; it from there.</li>
+</ol>
+
+<p>Reversing the provisioning protocol will take time, so I decided to go with option 2 for the short term.
+I already know that RSA tokens need two things to be provisioned &ndash; serial number and root seed (16 bytes).
+Once I get those, I can continue using <code>stoken</code> on all of my devices.</p>
+
+<p>My plan was to install the RSA app on my rooted Nexus 5, provision a token and then analyze the application DB.
+The application DB has a <code>SERIALNUMBER</code> and <code>ROOTSEED</code> columns. The serial number was written in plain text but the root seed was a huge binary blob.
+Turns out we need some reversing after all &hellip;</p>
+
+<p>This is where I decided to give <a href="https://frida.re/">Frida</a> a try. Frida is a dynamic instrumentation toolkit that supports all major platforms, including Android.
+It allows you to install hooks into a target process that can trace or change execution flows. It&rsquo;s pretty amazing!</p>
+
+<p>I managed to extract the serial number and the root seed from <a href="https://play.google.com/store/apps/details?id=com.rsa.via">RSA SecurID Authenticate</a> ver.3.1.0 with the following script:</p>
+
+<pre><code class="language-javascript">function bytes2hex(array) {
+    var result = '';
+    for (var i = 0; i &lt; array.length; ++i) {
+        result += ('0' + (array[i] &amp; 0xFF).toString(16)).slice(-2);
+    }
+    result += ' (' + array.length + ' bytes)'
+    return result;
+}
+
+Java.perform(function() {
+    Java.use('com.rsa.securidlib.g.gg').$init.overload('[B').implementation = function(byteArr) {
+        if (byteArr.length == 16) {
+            console.log(&quot;Seed: &quot; + bytes2hex(byteArr));
+        }
+        return this.$init(byteArr);
+    }
+    Java.use('com.rsa.securidlib.android.AndroidSecurIDLib').getNextOtpWithDataProtection.implementation = function(str, byteArr, map) {
+        console.log(&quot;Serial number: &quot; + str);
+        return this.getNextOtpWithDataProtection(str, byteArr, map);
+    }
+}); 
+</code></pre>
+
+<p>Once you have the serial number and the seed, you can use <a href="https://gist.github.com/dlenski/d6d4df40c8dd538339f750902d68bcfb">this script</a>
+to get the token into a CTF format (expiration doesn&rsquo;t matter):</p>
+
+<pre><code class="language-bash">$ SEED=&lt;seed&gt; SN=&lt;serial_number&gt; EXPIRATION=2030/12/31 ./make_RSA_token.sh
+</code></pre>
+
+<p>and then import it into <code>stoken</code>:</p>
+
+<pre><code class="language-bash">$ stoken import --token=&lt;ctf_token&gt;
+</code></pre>
+
+<p>Cheers :)</p>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/cloud-air-purifier/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/cloud-air-purifier/">Controlling purifiers over the internet</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+
