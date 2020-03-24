@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://xakcop.com/post/cloning-rsa/</loc>
-    <lastmod>2019-12-12T10:13:20+02:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://xakcop.com/post/</loc>
-    <lastmod>2019-12-12T10:13:20+02:00</lastmod>
+    <lastmod>2020-03-23T12:22:20+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://xakcop.com/</loc>
+    <lastmod>2020-03-23T12:22:20+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xakcop.com/post/solo-sign/</loc>
+    <lastmod>2020-03-23T12:22:20+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://xakcop.com/post/cloning-rsa/</loc>
     <lastmod>2019-12-12T10:13:20+02:00</lastmod>
   </url>
   

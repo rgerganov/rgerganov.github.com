@@ -6,11 +6,21 @@
     <description>Recent content in Posts on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2016-2019. All rights reserved.</copyright>
-    <lastBuildDate>Thu, 12 Dec 2019 10:13:20 +0200</lastBuildDate>
+    <copyright>&amp;copy; 2016-2020. All rights reserved.</copyright>
+    <lastBuildDate>Mon, 23 Mar 2020 12:22:20 +0200</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Signing files with Solo</title>
+      <link>https://xakcop.com/post/solo-sign/</link>
+      <pubDate>Mon, 23 Mar 2020 12:22:20 +0200</pubDate>
+      
+      <guid>https://xakcop.com/post/solo-sign/</guid>
+      <description>Solo is FIDO2 security key with open hardware and firmware. I have been following the project and using the key for quite a while now. It shares my believe that security solutions must be open. Solo is not only open but it also have developer edition, called Solo Hacker, which allows firmware modifications.
+I&amp;rsquo;ve been dealing with digital signatures a lot lately, so I thought why not use my Solo key to sign files?</description>
+    </item>
     
     <item>
       <title>Cloning RSA tokens with Frida</title>
