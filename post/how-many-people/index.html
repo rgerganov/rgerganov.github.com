@@ -4,10 +4,10 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="">
+  <meta name="description" content="COVID-19 edition">
   <meta name="generator" content="Hugo 0.59.1" />
 
-  <title>Posts &middot; random hacks</title>
+  <title>How many people are around &middot; random hacks</title>
 
     
 
@@ -41,9 +41,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
  
-  
-  <link rel="alternate" type="application/rss+xml" title="random hacks"
-    href='/post/index.xml' />
   
 
   
@@ -95,11 +92,6 @@
   <div class="pure-menu social">
   <ul class="pure-menu-list">
 
-    
-    <li class="pure-menu-item">
-      <a class="pure-menu-link" href='/post/index.xml'><i
-          class="fa fa-rss fa-fw"></i>RSS</a>
-    </li>
     
 
     
@@ -207,60 +199,95 @@
 
 
 <div class="header">
-  <h1>Posts</h1>
+  <h1>How many people are around</h1>
+  <h2>COVID-19 edition</h2>
 </div>
 <div class="content">
-  
-  <h2>2020</h2>
-  <ul>
-  
-    <li><time>26 May 2020, 17:41</time> - <a href="https://xakcop.com/post/how-many-people/">How many people are around</a></li>
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>26 May 2020, 17:41</time>
+  </div>
 
   
-    <li><time>23 Mar 2020, 12:22</time> - <a href="https://xakcop.com/post/solo-sign/">Signing files with Solo</a></li>
 
   
-  </ul>
   
-  <h2>2019</h2>
-  <ul>
   
-    <li><time>12 Dec 2019, 10:13</time> - <a href="https://xakcop.com/post/cloning-rsa/">Cloning RSA tokens with Frida</a></li>
+  
 
   
-    <li><time>30 Nov 2019, 11:04</time> - <a href="https://xakcop.com/post/cloud-air-purifier/">Controlling purifiers over the internet</a></li>
+  
+  
+  
+
+</div>
+
+  <p>There is a nice open-source project <a href="https://github.com/schollz/howmanypeoplearearound">howmanypeoplearearound</a>
+that counts the number of people around by sniffing WiFi probe requests sent from mobile phones.</p>
+
+<p>Well, now we have another method to do the same by exploiting the <a href="https://en.wikipedia.org/wiki/Exposure_Notification">contact tracing</a> functionality which is being
+added to iOS and Android. Cell phones are using Bluetooth Low Energy to transmit ephemeral IDs to nearby
+devices in order to discover encounters with other people. These IDs and the Bluetooth MAC changes every 15-20
+minutes to prevent tracking of users. However, this time is enough to answer the question &ldquo;how many people are around?&rdquo;.
+We can also differentiate contact tracing messages from other messages by the service UUID.
+The UUID used by <a href="https://blog.google/documents/70/Exposure_Notification_-_Bluetooth_Specification_v1.2.2.pdf">Google and Apple</a> is <code>0xFD6F</code>.</p>
+
+<p>Here is my PoC running on Linux which uses <a href="https://www.wireshark.org/docs/man-pages/tshark.html">tshark</a>.
+First we dump BTLE advertisements to a file for a couple of minutes:</p>
+
+<pre><code class="language-bash">$ sudo hcitool lescan --duplicates &amp;
+$ tshark -i bluetooth0 -w /tmp/btcap
+# leave this for 5-10 min.
+</code></pre>
+
+<p>Then we filter by service UUID and print the MAC address:</p>
+
+<pre><code class="language-bash">$ tshark -r /tmp/btcap -T fields -e bthci_evt.bd_addr -Y &quot;btcommon.eir_ad.entry.uuid_16 == 0xfd6f&quot;
+5c:32:95:32:93:86
+5c:32:95:32:93:86
+5c:32:95:32:93:86
+5c:32:95:32:93:86
+74:57:03:25:71:b9
+74:57:03:25:71:b9
+74:57:03:25:71:b9
+74:57:03:25:71:b9
+</code></pre>
+
+<p>From this output we can say that we have either one device which changed its MAC address during the scan or two devices around.</p>
+
 
   
-    <li><time>05 Nov 2019, 17:12</time> - <a href="https://xakcop.com/post/root-hs6020/">Rooting HS6020 IPTV STB</a></li>
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/solo-sign/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/solo-sign/">Signing files with Solo</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
 
   
-    <li><time>07 Mar 2019, 16:33</time> - <a href="https://xakcop.com/post/vmw-kernel-debugging/">Debugging the Linux kernel with VMware</a></li>
 
-  
-    <li><time>19 Jan 2019, 10:49</time> - <a href="https://xakcop.com/post/ctrl-air-purifier/">Controlling my Air Purifier</a></li>
-
-  
-  </ul>
-  
-  <h2>2017</h2>
-  <ul>
-  
-    <li><time>22 Mar 2017, 10:21</time> - <a href="https://xakcop.com/post/virt-usb-drive/">Virtual USB drive</a></li>
-
-  
-    <li><time>29 Jan 2017, 13:27</time> - <a href="https://xakcop.com/post/cloning-rfid/">Cloning RFID cards</a></li>
-
-  
-  </ul>
-  
-  <h2>2016</h2>
-  <ul>
-  
-    <li><time>27 Sep 2016, 11:19</time> - <a href="https://xakcop.com/post/mitm-stb/">MitM&#39;ing my STB</a></li>
-
-  
-  </ul>
-  
 </div>
 
 </div>

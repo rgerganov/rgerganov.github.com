@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2020. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 23 Mar 2020 12:22:20 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 26 May 2020 17:41:25 +0300</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How many people are around</title>
+      <link>https://xakcop.com/post/how-many-people/</link>
+      <pubDate>Tue, 26 May 2020 17:41:25 +0300</pubDate>
+      
+      <guid>https://xakcop.com/post/how-many-people/</guid>
+      <description>There is a nice open-source project howmanypeoplearearound that counts the number of people around by sniffing WiFi probe requests sent from mobile phones.
+Well, now we have another method to do the same by exploiting the contact tracing functionality which is being added to iOS and Android. Cell phones are using Bluetooth Low Energy to transmit ephemeral IDs to nearby devices in order to discover encounters with other people. These IDs and the Bluetooth MAC changes every 15-20 minutes to prevent tracking of users.</description>
+    </item>
     
     <item>
       <title>Signing files with Solo</title>
