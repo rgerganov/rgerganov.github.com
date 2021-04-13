@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2020. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 26 May 2020 17:41:25 +0300</lastBuildDate>
+    <lastBuildDate>Tue, 13 Apr 2021 10:52:01 +0300</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>SoftHSMv2 internals</title>
+      <link>https://xakcop.com/post/softhsmv2/</link>
+      <pubDate>Tue, 13 Apr 2021 10:52:01 +0300</pubDate>
+      
+      <guid>https://xakcop.com/post/softhsmv2/</guid>
+      <description>SoftHSMv2 is a software implementation of the PCKS#11 interface. It is often used as replacement for real HSM devices in test environments where protecting key material is not a strong requirement. In this post I will explain how the state of SoftHSMv2 is persisted, the security behind it and what can be improved.
+Tokens and objects Token is the PKCS#11 term for something that stores cryptographic objects and performs cryptographic operations.</description>
+    </item>
     
     <item>
       <title>How many people are around</title>

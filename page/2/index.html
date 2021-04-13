@@ -4,10 +4,10 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="COVID-19 edition">
+  <meta name="description" content="">
   <meta name="generator" content="Hugo 0.59.1" />
 
-  <title>How many people are around &middot; random hacks</title>
+  <title>random hacks</title>
 
     
 
@@ -41,6 +41,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
  
+  
+  <link rel="alternate" type="application/rss+xml" title="random hacks"
+    href='/index.xml' />
   
 
   
@@ -92,6 +95,11 @@
   <div class="pure-menu social">
   <ul class="pure-menu-list">
 
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href='/index.xml'><i
+          class="fa fa-rss fa-fw"></i>RSS</a>
+    </li>
     
 
     
@@ -199,100 +207,61 @@
 
 
 <div class="header">
-  <h1>How many people are around</h1>
-  <h2>COVID-19 edition</h2>
+  <h1>random hacks</h1>
+  <h2>reverse engineering, hardware hacking, etc.</h2>
 </div>
-<div class="content">
 
-  <div class="post-meta">
+<div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="https://xakcop.com/post/mitm-stb/">MitM&#39;ing my STB</a></h2>
+
+    <div class="post-meta">
 
   <div>
     <i class="fa fa-calendar fa-fw"></i>
-    <time>26 May 2020, 17:41</time>
+    <time>27 Sep 2016, 11:19</time>
   </div>
 
   
 
   
-  
-  
-  
 
-  
-  
-  
   
 
 </div>
 
-  <p>There is a nice open-source project <a href="https://github.com/schollz/howmanypeoplearearound">howmanypeoplearearound</a>
-that counts the number of people around by sniffing WiFi probe requests sent from mobile phones.</p>
+  </header>
 
-<p>Well, now we have another method to do the same by exploiting the <a href="https://en.wikipedia.org/wiki/Exposure_Notification">contact tracing</a> functionality which is being
-added to iOS and Android. Cell phones are using Bluetooth Low Energy to transmit ephemeral IDs to nearby
-devices in order to discover encounters with other people. These IDs and the Bluetooth MAC changes every 15-20
-minutes to prevent tracking of users. However, this time is enough to answer the question &ldquo;how many people are around?&rdquo;.
-We can also differentiate contact tracing messages from other messages by the service UUID.
-The UUID used by <a href="https://blog.google/documents/70/Exposure_Notification_-_Bluetooth_Specification_v1.2.2.pdf">Google and Apple</a> is <code>0xFD6F</code>.</p>
-
-<p>Here is my PoC running on Linux which uses <a href="https://www.wireshark.org/docs/man-pages/tshark.html">tshark</a>.
-First we dump BTLE advertisements to a file for a couple of minutes:</p>
-
-<pre><code class="language-bash">$ sudo hcitool lescan --duplicates &amp;
-$ tshark -i bluetooth0 -w /tmp/btcap
-# leave this for 5-10 min.
-</code></pre>
-
-<p>Then we filter by service UUID and print the MAC address:</p>
-
-<pre><code class="language-bash">$ tshark -r /tmp/btcap -T fields -e bthci_evt.bd_addr -Y &quot;btcommon.eir_ad.entry.uuid_16 == 0xfd6f&quot;
-5c:32:95:32:93:86
-5c:32:95:32:93:86
-5c:32:95:32:93:86
-5c:32:95:32:93:86
-74:57:03:25:71:b9
-74:57:03:25:71:b9
-74:57:03:25:71:b9
-74:57:03:25:71:b9
-</code></pre>
-
-<p>From this output we can say that we have either one device which changed its MAC address during the scan or two devices around.</p>
-
+  <p>
+  My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself:
+ The only &ldquo;user interface&rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.
+  </p>
 
   
-<div class="prev-next-post pure-g">
-  <div class="pure-u-1-24" style="text-align: left;">
-    
-    <a href="https://xakcop.com/post/solo-sign/"><i class="fa fa-chevron-left"></i></a>
-    
-  </div>
-  <div class="pure-u-10-24">
-    
-    <nav class="prev">
-      <a href="https://xakcop.com/post/solo-sign/">Signing files with Solo</a>
-    </nav>
-    
-  </div>
-  <div class="pure-u-2-24">
-    &nbsp;
-  </div>
-  <div class="pure-u-10-24">
-    
-    <nav class="next">
-      <a href="https://xakcop.com/post/softhsmv2/">SoftHSMv2 internals</a>
-    </nav>
-    
-  </div>
-  <div class="pure-u-1-24" style="text-align: right;">
-    
-    <a href="https://xakcop.com/post/softhsmv2/"><i class="fa fa-chevron-right"></i></a>
-    
-  </div>
-</div>
-
-
+  <footer>
+    <a href="/post/mitm-stb/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
 
   
+
+  
+
+
+<nav class="pagination" role="pagination">
+  
+  <a href="/"><i class="fa fa-chevron-left"></i></a>
+  
+  <span>&nbsp;2 / 2&nbsp;</span>
+  
+  <i class="fa fa-chevron-right"></i>
+  
+</nav>
+
+
 
 </div>
 
