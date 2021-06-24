@@ -6,11 +6,22 @@
     <description>Recent content in Posts on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2016-2020. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 13 Apr 2021 10:52:01 +0300</lastBuildDate>
+    <copyright>&amp;copy; 2016-2021. All rights reserved.</copyright>
+    <lastBuildDate>Thu, 24 Jun 2021 16:47:22 +0300</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ISS SSTV</title>
+      <link>https://xakcop.com/post/iss-sstv/</link>
+      <pubDate>Thu, 24 Jun 2021 16:47:22 +0300</pubDate>
+      
+      <guid>https://xakcop.com/post/iss-sstv/</guid>
+      <description>Today I have successfully received and decoded an SSTV transmission from ISS. This is the result:
+ In this post I will give a quick summary of what I have been using and how it worked for me.
+Hardware:  USRP B200 - this is a high-end SDR but RTL-SDR dongle should also be fine Dipole antenna - I bought this from the RTL-SDR store; each side of the dipole should be around 50cm to make it resonant to 145.</description>
+    </item>
     
     <item>
       <title>SoftHSMv2 internals</title>
