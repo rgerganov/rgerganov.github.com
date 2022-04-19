@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.59.1" />
+
+  <title>Reversing 2.4GHz remote control &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2022. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Reversing 2.4GHz remote control</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>18 Apr 2022, 15:26</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  
+
+<p>I have an old project on Github called <a href="https://github.com/rgerganov/rf-car">rf-car</a> for controlling a radio car with HackRF.
+A few months ago, my daughter received a new RC car made by <a href="https://www.amazon.de/-/en/Dickie-Flippy-Control-Rotation-Function/dp/B084PY44PN">Dickie Toys</a>:</p>
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/dickie-car.jpg" alt="fsk-car">
+</div>
+
+<p>This car was faster than the previous one and it was more fun to play with.
+I thought it&rsquo;d be great if I can add support for it in the <a href="https://github.com/rgerganov/rf-car">rf-car</a> project and the fun began.</p>
+
+<h2 id="fcc-docs">FCC docs</h2>
+
+<p>The car works on 2.4GHz which is clearly stated in the product description.
+The remote control has FCC ID <a href="https://fccid.io/NLB24054TX">NLB24054TX</a> and from the FCC documents I found that it uses <a href="https://en.wikipedia.org/wiki/Frequency-shift_keying#Gaussian_frequency-shift_keying">GFSK</a> modulation.
+From the internal photos of the remote control we can see it pretty much consists of four buttons connected to unlabeled IC:</p>
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/remote-control-ic.png" alt="remote-control-ic">
+</div>
+
+<p>So the only useful information I got from the FCC docs is that the car uses GFSK modulation.</p>
+
+<h2 id="signal-analysis">Signal analysis</h2>
+
+<p>The go-to tool for signal analysis is, of course, <a href="https://github.com/miek/inspectrum">inspectrum</a>.
+I have successfully reverse engineered the ASK/OOK signal of my old car with it but I didn&rsquo;t have any experience with FSK signals.</p>
+
+<p>This is how the recorded signal looks like when a single button on the remote is pressed:</p>
+
+<p><a href="/images/rc-fsk-signal.png">
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/rc-fsk-signal.png" >
+</div>
+</a></p>
+
+<p>The remote is sending 9 batches of 16 packets (on the screenshot above only 3 of the 9 batches are shown).
+The signal is GFSK, so we add a derived frequency plot (right click, add derived plot, add frequency plot):</p>
+
+<p><a href="/images/rc-freq-plot.png">
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/rc-freq-plot.png" >
+</div>
+</a></p>
+
+<p>To analyse the frequency plot, we need to decrease the FFT size and increase the zoom.
+This is how a single packet looks like:</p>
+
+<p><a href="/images/rc-freq-plot-zoomed.png">
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/rc-freq-plot-zoomed.png" >
+</div>
+</a></p>
+
+<p>With the symbol markers we can easily find the symbol period which is 1us:</p>
+
+<p><a href="/images/rc-freq-plot-symbols.png">
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/rc-freq-plot-symbols.png" >
+</div>
+</a></p>
+
+<p>Finally, we add a derived threshold plot from which we can extract the symbols as 0s and 1s (right click, extract symbols):</p>
+
+<p><a href="/images/rc-threshold-plot.png">
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/rc-threshold-plot.png" >
+</div>
+</a></p>
+
+<p>There are 146 symbols (bits) in each packet. The packets in each batch are the same.</p>
+
+<h2 id="signal-generation">Signal generation</h2>
+
+<p>Now when we know the symbol rate (1M bits/sec), the modulation and the data being transferred, we can generate the signal ourselves.
+The following code modulates the input in <code>data</code> using FSK and produces an IQ signal in the <code>out</code> vector:</p>
+
+<pre><code class="language-c++">float phase = 0;
+int samples_per_bit = SAMPLE_RATE / SYMBOL_RATE;
+for (auto b : data) {
+    float freq = b ? FREQ1 : FREQ2;
+    float phase_change_per_sample = (2*M_PI * freq) / SAMPLE_RATE;
+    for (int i = 0; i &lt; samples_per_bit; i++) {
+        out.push_back(cos(phase));
+        out.push_back(sin(phase));
+        phase += phase_change_per_sample;
+        if (phase &gt; 2*M_PI) {
+            phase -= 2*M_PI;
+        }
+    }
+}
+</code></pre>
+
+<h2 id="two-way-communication">Two-way communication</h2>
+
+<p>One interesting detail is that the communication between the car and the remote control is actually two-way!
+When the remote is switched on, it starts sending designated packets until a response from the car is received.
+When response from the car is received, the remote sends a final packet to the car and then the car starts accepting commands from the remote.
+It is very similar to the TCP handshake but much simpler because the packets are always the same.
+In my implementation I opted to simply transmit the sync packets from the remote with some delay between them on program start.
+This works fine as long as the car is already switched on and receives those packets.</p>
+
+<h2 id="result">Result</h2>
+
+<p>Here is a short demo of how it works:</p>
+
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/mqSv-Nycy_4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/iss-sstv/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/iss-sstv/">Receiving SSTV from ISS</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+
