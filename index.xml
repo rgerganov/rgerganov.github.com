@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2022. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 18 Apr 2022 15:26:28 +0300</lastBuildDate>
+    <lastBuildDate>Fri, 12 Aug 2022 10:00:13 +0300</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hacking Hyundai Tucson 2020</title>
+      <link>https://xakcop.com/post/hyundai-hack/</link>
+      <pubDate>Fri, 12 Aug 2022 10:00:13 +0300</pubDate>
+      
+      <guid>https://xakcop.com/post/hyundai-hack/</guid>
+      <description>I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&amp;rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:</description>
+    </item>
     
     <item>
       <title>Reversing 2.4GHz remote control</title>
