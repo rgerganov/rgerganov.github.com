@@ -253,7 +253,7 @@
 
 <h2 id="firmware-updates">Firmware updates</h2>
 
-<p>The firmware is available from <a href="https://https://update.hyundai.com/">update.hyundai.com</a>. You have to download and install Navigation Updater and then select your car model. The updater downloads all the files and prepares an SD card or USB drive. For my Hyundai it downloaded 23GB of data which includes both navigation updates and firmware. In the root folder of the USB drive there is <code>2018_20_Tucson_EU.ver</code> file which lists all of the files in the update:</p>
+<p>The firmware is available from <a href="https://update.hyundai.com/">update.hyundai.com</a>. You have to download and install Navigation Updater and then select your car model. The updater downloads all the files and prepares an SD card or USB drive. For my Hyundai it downloaded 23GB of data which includes both navigation updates and firmware. In the root folder of the USB drive there is <code>2018_20_Tucson_EU.ver</code> file which lists all of the files in the update:</p>
 
 <pre><code class="language-text">+|22Q1|TLFL.EUR.SOP.V126.220421.STD_M|HM|2018_20_Tucson_EU|1477|1
 2018_20_Tucson_EU\DAUDIOPLUS_M\eur|vr.img|10|623073973|97644544|1
@@ -285,7 +285,7 @@
 
 <h2 id="cracking-the-zip-password">Cracking the zip password</h2>
 
-<p>I decided to try the same cracking tool as greenluigi1 which is <a href="https://github.com/kimci86/bkcrack">bkcrack</a>. It implements a known plaintext attack discovered by Eli Biham and Paul C. Kocher. My encrypted zip contains two zip files. So what would be a good known plaintext candidate? The ZIP file header of course! This is how it looks like:</p>
+<p>I decided to try the same cracking tool as greenluigi1 which is <a href="https://github.com/kimci86/bkcrack">bkcrack</a>. It implements a known plaintext attack discovered by Eli Biham and Paul C. Kocher. The attack requires at least 12 bytes of plaintext. My encrypted zip contains two zip files. So what would be a good known plaintext candidate? The ZIP file header of course! This is how it looks like:</p>
 
 <p><a href="/images/zip-header.png">
 <div class="pure-u-1-1">
