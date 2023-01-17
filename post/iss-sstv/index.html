@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>Receiving SSTV from ISS &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -229,42 +229,37 @@
 
 </div>
 
-  
-
-<p>Today I have successfully received and decoded an <a href="https://en.wikipedia.org/wiki/Slow-scan_television">SSTV</a> transmission from <a href="https://en.wikipedia.org/wiki/International_Space_Station">ISS</a>.
+  <p>Today I have successfully received and decoded an <a href="https://en.wikipedia.org/wiki/Slow-scan_television">SSTV</a> transmission from <a href="https://en.wikipedia.org/wiki/International_Space_Station">ISS</a>.
 This is the result:</p>
+
 
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/iss-sstv.png" alt="iss-sstv">
 </div>
 
+
 <p>In this post I will give a quick summary of what I have been using and how it worked for me.</p>
-
 <h2 id="hardware">Hardware:</h2>
-
 <ul>
 <li>USRP B200 - this is a high-end SDR but RTL-SDR dongle should also be fine</li>
 <li>Dipole antenna - I bought this from the <a href="https://www.rtl-sdr.com/using-our-new-dipole-antenna-kit/">RTL-SDR store</a>; each side of the dipole should be around 50cm to make it resonant to 145.800MHz which is the frequency of the SSTV transmission</li>
 <li>Laptop</li>
 </ul>
-
 <p>I don&rsquo;t have a base station, so I brought everything on this rooftop (the Baofeng radio is not used):
 <a href="/images/iss-sstv-rig.jpg" title="iss-sstv-rig">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/iss-sstv-rig-small.jpg" >
 </div>
+
 </a></p>
-
 <h2 id="software">Software:</h2>
-
 <ul>
 <li><a href="http://gpredict.oz9aec.net/">gpredict</a> - I have used this to track ISS, it gives a nice schedule of all upcoming passes</li>
 <li><a href="https://gqrx.dk/">gqrx</a> - my favorite SDR program; tune to 145.800MHz FM and record the audio; this is my <a href="https://drive.google.com/file/d/1I5k2g2cRtz5jN0REE-S1kHAZ6z2RTBaB/view?usp=sharing">recording</a></li>
 <li><a href="http://users.telenet.be/on4qz/qsstv/index.html">qsstv</a> - an open-source program for SSTV decoding; the user interface is pretty bad but it does the job</li>
 </ul>
-
 <p>That&rsquo;s all, have fun!</p>
-
 <p>73!</p>
 
 

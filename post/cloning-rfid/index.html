@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>Cloning RFID cards &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -229,53 +229,49 @@
 
 </div>
 
-  
-
-<p>This post summarizes my experience with cloning RFID cards that I am using on daily basis.
+  <p>This post summarizes my experience with cloning RFID cards that I am using on daily basis.
 There is nothing new here, just a summary of well-known hacks that I found on the internet.</p>
-
 <h3 id="corporate-badge">Corporate badge</h3>
-
 <p>At work we use 125KHz passive RFID badges which are easy to clone.
 Each badge has unique ID, so the first step is to read this ID.
 I have been using this DIY <a href="http://playground.arduino.cc/Main/DIYRFIDReader">reader</a> based on an Arduino:</p>
-
 <p><a href="/images/rfid-reader.jpg" title="rfid-reader">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/rfid-reader-small.jpg" >
 </div>
+
 </a></p>
-
 <p>By the way, I had to make some slight <a href="https://gist.github.com/rgerganov/c8cec1f2c498c1e0786084bfdc1240b7">changes</a> to the firware to make it work.</p>
-
 <p>Once you get the ID, you can &ldquo;program&rdquo; it on an ATtiny85 microcontroller as described <a href="http://scanlime.org/2008/09/using-an-avr-as-an-rfid-tag/">here</a>.
 This is how my assembled clone looks like:</p>
-
 <p><a href="/images/rfid-badge.jpg" title="rfid-badge">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/rfid-badge-small.jpg" >
 </div>
+
 </a></p>
-
 <h3 id="residential-entry">Residential entry</h3>
-
 <p>The building where I live (and many other buildings) has a front door which is opened with an NFC tag. I found that it is Mifare Classic 1k tag
 which has been cracked long time ago. Actually, it turned out that I don&rsquo;t have to crack anything to create a clone because the tag had default keys.
 They were relying only on the fact that each tag has unique ID and the door opens when pre-recorded ID is shown.
 Some fine people in China are selling tags that you can program with whatever ID you want, so creating is a clone a simple matter of running <code>nfc-mfsetuid</code>:</p>
 
+
 <script type="text/javascript" src="https://asciinema.org/a/14.js" id="asciicast-99020" async></script>
 
-<h3 id="public-transport">Public transport</h3>
 
+<h3 id="public-transport">Public transport</h3>
 <p>Turns out that Mifare Classic 1k is also being used for the public transport in Sofia. I managed to crack one of the old cards that I have &ndash; it has been
 using a combination of default keys and &ldquo;SofiaM&rdquo;:</p>
 
+
 <script type="text/javascript" src="https://asciinema.org/a/14.js" id="asciicast-a1fjcus3zcgkxpvh3i72txy91" async></script>
+
 
 <p>However, some of the new cards for the subway manage to resist my cracking attempts.
 I guess they are using something more secure which is running an emulation of Mifare Classic.</p>
-
 <p>UPDATE 03/15/2017: No, they are not. Keys have been disclosed <a href="https://www.facebook.com/ilf.fb/posts/10158277574290527">here</a>.</p>
 
 

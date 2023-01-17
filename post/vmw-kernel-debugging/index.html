@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>Debugging the Linux kernel with VMware &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -229,115 +229,77 @@
 
 </div>
 
-  
-
-<p>I am playing with emulated HID devices in Linux and found a kernel bug when using the <code>usb_f_hid</code> and <code>dummy_hcd</code> kernel modules.
+  <p>I am playing with emulated HID devices in Linux and found a kernel bug when using the <code>usb_f_hid</code> and <code>dummy_hcd</code> kernel modules.
 I won&rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this
 particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:</p>
-
 <ol>
 <li>Load <code>libcomposite</code> and <code>dummy_hcd</code> into the kernel</li>
 <li>Create an emulated HID device with configfs</li>
 <li>Write something to <code>/dev/hidg0</code></li>
 </ol>
-
 <p>After executing step 3, the machine hangs in a way which makes it clear that it&rsquo;s not a userspace problem but a kernel one.</p>
-
 <p>I know that <a href="https://www.vmware.com/products/workstation-pro.html">VMware Workstation</a> has support for kernel debugging, so
 I thought this is a great chance to give it a try.
 I loaded Ubuntu 18.04 into a VM and executed the steps above. The VM hanged and the corresponding <code>vmware-vmx</code> process in the
 host OS went to 100% CPU usage. This means that when the problem occurs, the kernel goes into some kind of busy loop.
 Let&rsquo;s see how we can debug this further.</p>
-
 <h2 id="vm-config">VM config</h2>
-
 <p>VMware Workstation has a nice feature which allows to debug the Linux kernel running inside the VM with <code>gdb</code> on the host.
 This is enabled by adding a single line to the VM&rsquo;s configuration file:</p>
-
 <pre><code>debugStub.listen.guest64 = &quot;TRUE&quot;
-</code></pre>
-
-<p>Now when the VM is started, port 8864 is opened on the host and we can connect to it with <code>gdb</code> for remote debugging.</p>
-
+</code></pre><p>Now when the VM is started, port 8864 is opened on the host and we can connect to it with <code>gdb</code> for remote debugging.</p>
 <h2 id="preparing-the-guest-os">Preparing the guest OS</h2>
-
 <p>First, we want to disable <a href="https://en.wikipedia.org/wiki/Address_space_layout_randomization">KASLR</a>
 as it will make the debugging harder. This is done by booting the kernel with the <code>nokaslr</code> option.</p>
-
 <p>Open <code>/etc/default/grub</code>, find the line starting with <code>GRUB_CMDLINE_LINUX_DEFAULT</code> and append <code>nokaslr</code> at the end.
 Then update GRUB:</p>
-
 <p><code>sudo update-grub</code></p>
-
 <p>and reboot the VM.</p>
-
 <p>Next, we want to obtain debug symbols for the running kernel and its modules.
 For Ubuntu there is a dedicated <a href="https://wiki.ubuntu.com/Debug%20Symbol%20Packages#Getting_-dbgsym.ddeb_packages">repository</a>:</p>
-
 <pre><code>echo &quot;deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse
 deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse
 deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse&quot; | \
 sudo tee -a /etc/apt/sources.list.d/ddebs.list
 sudo apt install ubuntu-dbgsym-keyring
 sudo apt-get update
-</code></pre>
-
-<p>Install kernel with debug symbols:</p>
-
+</code></pre><p>Install kernel with debug symbols:</p>
 <pre><code>sudo apt-get install linux-image-`uname -r`-dbgsym
-</code></pre>
-
-<p>Copy the following files to the host OS as we need to load them into <code>gdb</code>:</p>
-
+</code></pre><p>Copy the following files to the host OS as we need to load them into <code>gdb</code>:</p>
 <pre><code>/usr/lib/debug/boot/vmlinux-4.15.0-45-generic
 /usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/udc/udc-core.ko
 /usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/function/usb_f_hid.ko
 dummy_hcd.ko
-</code></pre>
-
-<p><em>Note</em>: <code>dummy_hcd</code> is missing in Ubuntu (see this <a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1073089">bug</a>), I built it by myself.</p>
-
+</code></pre><p><em>Note</em>: <code>dummy_hcd</code> is missing in Ubuntu (see this <a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1073089">bug</a>), I built it by myself.</p>
 <h2 id="using-gdb">Using GDB</h2>
-
 <p>Now that we have the debug symbols, we are ready to fire off <code>gdb</code> in the host OS:</p>
-
 <pre><code>$ gdb vmlinux-4.15.0-45-generic
 
 (gdb) set architecture i386:x86-64
 (gdb) target remote localhost:8864
 (gdb) c
-</code></pre>
-
-<p>Hitting Ctrl+C will pause the VM:</p>
-
+</code></pre><p>Hitting Ctrl+C will pause the VM:</p>
 <p><a href="/images/debug-vm.png" title="debugvm">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/debug-vm-small.png" alt="debugvm">
 </div>
+
 </a></p>
-
 <p>so we can inspect the state in the debugger.</p>
-
 <p>We also need to load the symbols for the kernel modules that we want to debug.
 However, modules can be dynamically loaded at any address and we need to feed this information into <code>gdb</code>.
 Let&rsquo;s take for example <code>usb_f_hid</code>. We can get the corresponding addresses in the guest OS like this:</p>
-
 <pre><code>$ cd /sys/module/usb_f_hid/sections
 $ sudo cat .text .data .bss 
 0xffffffffc06d7000
 0xffffffffc06da000
 0xffffffffc06da740
-</code></pre>
-
-<p>Now we can add the symbol file in <code>gdb</code> using the addresses from above:</p>
-
+</code></pre><p>Now we can add the symbol file in <code>gdb</code> using the addresses from above:</p>
 <pre><code>(gdb) add-symbol-file usb_f_hid.ko 0xffffffffc06d7000 -s .data 0xffffffffc06da000 -s .bss 0xffffffffc06da740
-</code></pre>
-
-<p>We do the same for <code>udc-core</code> and <code>dummy_hcd</code>.
+</code></pre><p>We do the same for <code>udc-core</code> and <code>dummy_hcd</code>.
 Now that we have all symbols loaded, we can trigger the bug in the guest OS and then hit Ctrl+C in <code>gdb</code> to
 inspect the backtrace:</p>
-
 <pre><code>^C
 Program received signal SIGINT, Interrupt.
 0xffffffff810de405 in rep_nop () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:647
@@ -368,15 +330,11 @@ Program received signal SIGINT, Interrupt.
 #22 0x00007f8e8d85e2a0 in ?? ()
 #23 0x0000000000000005 in irq_stack_union ()
 Backtrace stopped: previous frame inner to this frame (corrupt stack?)
-</code></pre>
-
-<p>This reveals a deadlock involving <code>hidg-&gt;write_spinlock</code> in <code>f_hid.c</code> which explains why the CPU goes to 100% when the bug occurs.
+</code></pre><p>This reveals a deadlock involving <code>hidg-&gt;write_spinlock</code> in <code>f_hid.c</code> which explains why the CPU goes to 100% when the bug occurs.
 The spinlock is acquired in the <code>f_hidg_write()</code> function before calling <code>usb_ep_queue()</code> which callbacks to <code>f_hidg_req_complete()</code> which
 tries to acquire the same spinlock again.</p>
-
 <p>My attempt to fix this bug is this <a href="https://www.spinics.net/lists/linux-usb/msg177735.html">patch</a> which I submitted to the maintainers of the USB subsytem.
 Let&rsquo;s see how that goes :)</p>
-
 <p><strong>UPDATE:</strong> My patch has been <a href="https://github.com/torvalds/linux/commit/072684e8c58d17e853f8e8b9f6d9ce2e58d2b036">merged</a> in Linux 5.1-rc3</p>
 
 

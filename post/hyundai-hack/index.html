@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>Hacking Hyundai Tucson 2020 &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -229,33 +229,27 @@
 
 </div>
 
-  
-
-<p>I bought Hyundai Tucson 2020 two years ago and recently I found <a href="https://programmingwithstyle.com/tags/hyundai/">great series</a> of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:</p>
-
+  <p>I bought Hyundai Tucson 2020 two years ago and recently I found <a href="https://programmingwithstyle.com/tags/hyundai/">great series</a> of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:</p>
 <p><a href="/images/hyundai-ver.jpg">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/hyundai-ver.jpg" >
 </div>
+
 </a></p>
-
 <p>I also found the password protected Engineering Mode which appears by tapping 5 times on the left from the Update button and 2 times on the right:</p>
-
 <p><a href="/images/engmode-pwd.jpg">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/engmode-pwd.jpg" >
 </div>
+
 </a></p>
-
 <p>However, none of the publicly available passwords worked (1200, 2400, 3802, current time, etc.).</p>
-
 <p>So I decided to download the firmware and try to reverse it by myself.</p>
-
 <h2 id="firmware-updates">Firmware updates</h2>
-
 <p>The firmware is available from <a href="https://update.hyundai.com/">update.hyundai.com</a>. You have to download and install Navigation Updater and then select your car model. The updater downloads all the files and prepares an SD card or USB drive. For my Hyundai it downloaded 23GB of data which includes both navigation updates and firmware. In the root folder of the USB drive there is <code>2018_20_Tucson_EU.ver</code> file which lists all of the files in the update:</p>
-
-<pre><code class="language-text">+|22Q1|TLFL.EUR.SOP.V126.220421.STD_M|HM|2018_20_Tucson_EU|1477|1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">+|22Q1|TLFL.EUR.SOP.V126.220421.STD_M|HM|2018_20_Tucson_EU|1477|1
 2018_20_Tucson_EU\DAUDIOPLUS_M\eur|vr.img|10|623073973|97644544|1
 2018_20_Tucson_EU\DAUDIOPLUS_M\eur\tlfl\update|checksum|10|-755847668|1888|1
 2018_20_Tucson_EU\DAUDIOPLUS_M\eur\tlfl\update|info.ini|10|-2103668610|256|1
@@ -271,164 +265,136 @@
 2018_20_Tucson_EU\DAUDIOPLUS_M\eur\tlfl\update\system|vr.md5|10|-2044697631|41|1
 2018_20_Tucson_EU\DAUDIOPLUS_M\eur\tlfl\update\system|vr.sha|10|-189486074|137|1
 ...
-</code></pre>
-
-<p>For each file we have its directory, name, CRC32 (as signed 32bit int) and size. I quickly figured out that the most interesting file is <code>2018_20_Tucson_EU\DAUDIOPLUS_M\eur\tlfl\update\system\update_package.zip</code> which is an encrypted zip:</p>
-
+</code></pre></div><p>For each file we have its directory, name, CRC32 (as signed 32bit int) and size. I quickly figured out that the most interesting file is <code>2018_20_Tucson_EU\DAUDIOPLUS_M\eur\tlfl\update\system\update_package.zip</code> which is an encrypted zip:</p>
 <p><a href="/images/update_package.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/update_package.png" >
 </div>
+
 </a></p>
-
 <p>I tried to unzip using the password discovered by greenluigi1 (<code>ahqltmTkrhk2018@@</code>) but it didn&rsquo;t work.</p>
-
 <h2 id="cracking-the-zip-password">Cracking the zip password</h2>
-
 <p>I decided to try the same cracking tool as greenluigi1 which is <a href="https://github.com/kimci86/bkcrack">bkcrack</a>. It implements a known plaintext attack discovered by Eli Biham and Paul C. Kocher. The attack requires at least 12 bytes of plaintext. My encrypted zip contains two zip files. So what would be a good known plaintext candidate? The ZIP file header of course! This is how it looks like:</p>
-
 <p><a href="/images/zip-header.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/zip-header.png" >
 </div>
+
 </a></p>
-
 <p>Another significant advantage is that both zip files in <code>update_package.zip</code> are stored without compression (there is no point to compress files which are already compressed). This can be verified with the following command:</p>
-
-<pre><code class="language-shell">$ bkcrack -L update_package.zip
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ bkcrack -L update_package.zip
 bkcrack 1.5.0 - 2022-07-07
 Archive: update_package.zip
 Index Encryption Compression CRC32    Uncompressed  Packed size Name
 ----- ---------- ----------- -------- ------------ ------------ ----------------
-    0 ZipCrypto  Store       fbe57f09    227492981    227492993 update.zip
-    1 ZipCrypto  Store       b4be54fe         1203         1215 otacerts.zip
-</code></pre>
-
-<p>Now we just need to guess 12 bytes of either <code>update.zip</code> or <code>otacerts.zip</code> file header to perform the attack. There are not too many options for the first 10 bytes. The first 4 bytes are fixed (<code>504b0304</code>). The version bytes are either <code>1400</code> or <code>0a00</code> in most of the cases. Assuming the nested zips are not encrypted, the general purpose bit flag should be <code>0000</code>. The compression method is either <code>0000</code> (store) or <code>0800</code> (deflate). So we have the following variants for the first 10 bytes:</p>
-
-<pre><code class="language-text">plain1.bin: 504b 0304 1400 0000 0000
+    <span style="color:#ae81ff">0</span> ZipCrypto  Store       fbe57f09    <span style="color:#ae81ff">227492981</span>    <span style="color:#ae81ff">227492993</span> update.zip
+    <span style="color:#ae81ff">1</span> ZipCrypto  Store       b4be54fe         <span style="color:#ae81ff">1203</span>         <span style="color:#ae81ff">1215</span> otacerts.zip
+</code></pre></div><p>Now we just need to guess 12 bytes of either <code>update.zip</code> or <code>otacerts.zip</code> file header to perform the attack. There are not too many options for the first 10 bytes. The first 4 bytes are fixed (<code>504b0304</code>). The version bytes are either <code>1400</code> or <code>0a00</code> in most of the cases. Assuming the nested zips are not encrypted, the general purpose bit flag should be <code>0000</code>. The compression method is either <code>0000</code> (store) or <code>0800</code> (deflate). So we have the following variants for the first 10 bytes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">plain1.bin: 504b 0304 1400 0000 0000
 plain2.bin: 504b 0304 1400 0000 0800
 plain3.bin: 504b 0304 0a00 0000 0000
 plain4.bin: 504b 0304 0a00 0000 0800
-</code></pre>
-
-<p>We need two more bytes and the candidates are either file modification time or file modification date. The time is stored in seconds divided by 2 precision which gives us 24*60*30=43200 possibilities. Assuming the file modification happened in the last 5 years, we have 5*365=1825 possibilities for the date field. Clearly, it&rsquo;s more efficient to brute force the date field. However, a single run of this attack takes 30min on my laptop which makes brute force unfeasible. It&rsquo;s time for another wild guess. Both <code>update.zip</code> and <code>otacerts.zip</code> have &ldquo;21 April 2022&rdquo; as file modification date. Let&rsquo;s assume the modification date of the first file entry in <code>otacerts.zip</code> is also &ldquo;21 April 2022&rdquo;. This date is encoded in MS-DOS format as <code>9554</code>. Now we have 12 bytes of plain text but they are not contiguous because we have skipped the file modification time. Fortunately, <code>bkcrack</code> supports specifying an offset with the <code>-x</code> option. The first run of the attack with <code>plain1.bin</code> failed. However, with <code>plain2.bin</code> I have successfully recovered the keys:</p>
-
-<pre><code class="language-shell">$ bkcrack -C update_package.zip -c otacerts.zip -p plain2.bin -x 12 9554
+</code></pre></div><p>We need two more bytes and the candidates are either file modification time or file modification date. The time is stored in seconds divided by 2 precision which gives us 24*60*30=43200 possibilities. Assuming the file modification happened in the last 5 years, we have 5*365=1825 possibilities for the date field. Clearly, it&rsquo;s more efficient to brute force the date field. However, a single run of this attack takes 30min on my laptop which makes brute force unfeasible. It&rsquo;s time for another wild guess. Both <code>update.zip</code> and <code>otacerts.zip</code> have &ldquo;21 April 2022&rdquo; as file modification date. Let&rsquo;s assume the modification date of the first file entry in <code>otacerts.zip</code> is also &ldquo;21 April 2022&rdquo;. This date is encoded in MS-DOS format as <code>9554</code>. Now we have 12 bytes of plain text but they are not contiguous because we have skipped the file modification time. Fortunately, <code>bkcrack</code> supports specifying an offset with the <code>-x</code> option. The first run of the attack with <code>plain1.bin</code> failed. However, with <code>plain2.bin</code> I have successfully recovered the keys:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ bkcrack -C update_package.zip -c otacerts.zip -p plain2.bin -x <span style="color:#ae81ff">12</span> <span style="color:#ae81ff">9554</span>
 bkcrack 1.5.0 - 2022-07-07
-[15:03:29] Z reduction using 3 bytes of known plaintext
-100.0 % (3 / 3)
-[15:03:29] Attack on 1677473 Z values at index 6
+<span style="color:#f92672">[</span>15:03:29<span style="color:#f92672">]</span> Z reduction using <span style="color:#ae81ff">3</span> bytes of known plaintext
+100.0 % <span style="color:#f92672">(</span><span style="color:#ae81ff">3</span> / 3<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>15:03:29<span style="color:#f92672">]</span> Attack on <span style="color:#ae81ff">1677473</span> Z values at index <span style="color:#ae81ff">6</span>
 Keys: 850725d9 64202f01 143f9452
-2.8 % (47031 / 1677473)
-[15:04:05] Keys
+2.8 % <span style="color:#f92672">(</span><span style="color:#ae81ff">47031</span> / 1677473<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>15:04:05<span style="color:#f92672">]</span> Keys
 850725d9 64202f01 143f9452
-</code></pre>
-
-<p>Extracting the zip files:</p>
-
-<pre><code class="language-shell">$ bkcrack -C update_package.zip -c update.zip -k 850725d9 64202f01 143f9452 -d update.zip
+</code></pre></div><p>Extracting the zip files:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ bkcrack -C update_package.zip -c update.zip -k 850725d9 64202f01 143f9452 -d update.zip
 $ bkcrack -C update_package.zip -c otacerts.zip -k 850725d9 64202f01 143f9452 -d otacerts.zip
-</code></pre>
-
-<p><code>otacerts.zip</code> contains a single X509 certificate modifed on 21 April 2022 (yes, I was very lucky!):</p>
-
+</code></pre></div><p><code>otacerts.zip</code> contains a single X509 certificate modifed on 21 April 2022 (yes, I was very lucky!):</p>
 <p><a href="/images/otacerts.zip.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/otacerts.zip.png" >
 </div>
+
 </a></p>
-
 <p><code>update.zip</code> contains all of the interesting stuff:</p>
-
 <p><a href="/images/update.zip.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/update.zip.png" >
 </div>
+
 </a></p>
-
 <h2 id="reversing-the-firmware">Reversing the firmware</h2>
-
 <p>Apparently, my car is running Android and <code>system.ext4</code> is the root file system.
 Let&rsquo;s mount and look inside:</p>
-
-<pre><code class="language-shell">$ mkdir /tmp/car
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir /tmp/car
 $ sudo mount -t ext4 -o loop system.ext4 /tmp/car
 $ ls -la /tmp/car
-total 140
-drwxr-xr-x 14 root root  4096 Jan  1  1970 .
-drwxrwxrwt 25 root root 65536 Aug 11 15:40 ..
-drwxr-xr-x  2 root root  4096 Apr 21 10:50 app
-drwxr-xr-x  2 root 2000  4096 Apr 21 10:46 bin
--rw-r--r--  1 root root  6020 Apr 21 10:26 build.prop
-drwxr-xr-x 11 root root  4096 Apr 21 10:50 etc
-drwxr-xr-x  2 root root  4096 Apr 21 10:35 fonts
-drwxr-xr-x  2 root root  4096 Apr 21 10:50 framework
--rw-r--r--  1 root root  1912 Apr 21 10:35 key_3000000.psr
--rw-r--r--  1 root root  1913 Apr 21 10:35 key_921600.psr
-drwxr-xr-x  8 root root  8192 Apr 21 10:46 lib
-drwx------  2 root root  4096 Jan  1  1970 lost+found
-drwxr-xr-x  4 root root  4096 Apr 21 10:35 media
-drwxr-xr-x  7 root root  4096 Apr 21 10:38 usr
-drwxr-xr-x  4 root 2000  4096 Apr 21 10:35 vendor
-drwxr-xr-x  2 root root  4096 Apr 21 10:35 wifi
-drwxr-xr-x  2 root 2000  4096 Apr 21 10:45 xbin
-</code></pre>
-
-<p>Pretty much all of the applications are the in <code>/app</code> folder. Each app has both .apk and .odex, e.g:</p>
-
-<pre><code class="language-shell">$ ls -l /tmp/car/app/HKMC_EngineerMode.*
--rw-r--r-- 1 root root 2124079 Apr 21 10:50 /tmp/car/app/HKMC_EngineerMode.apk
--rw-r--r-- 1 root root 1630136 Apr 21 10:50 /tmp/car/app/HKMC_EngineerMode.odex
-</code></pre>
-
-<p>I have used <a href="https://github.com/JesusFreke/smali">baksmali</a> to convert odex files to smali and <a href="https://github.com/skylot/jadx">jadx</a> to decompile smali to Java.
+total <span style="color:#ae81ff">140</span>
+drwxr-xr-x <span style="color:#ae81ff">14</span> root root  <span style="color:#ae81ff">4096</span> Jan  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">1970</span> .
+drwxrwxrwt <span style="color:#ae81ff">25</span> root root <span style="color:#ae81ff">65536</span> Aug <span style="color:#ae81ff">11</span> 15:40 ..
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:50 app
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root <span style="color:#ae81ff">2000</span>  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:46 bin
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">6020</span> Apr <span style="color:#ae81ff">21</span> 10:26 build.prop
+drwxr-xr-x <span style="color:#ae81ff">11</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:50 etc
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:35 fonts
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:50 framework
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">1912</span> Apr <span style="color:#ae81ff">21</span> 10:35 key_3000000.psr
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">1913</span> Apr <span style="color:#ae81ff">21</span> 10:35 key_921600.psr
+drwxr-xr-x  <span style="color:#ae81ff">8</span> root root  <span style="color:#ae81ff">8192</span> Apr <span style="color:#ae81ff">21</span> 10:46 lib
+drwx------  <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Jan  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">1970</span> lost+found
+drwxr-xr-x  <span style="color:#ae81ff">4</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:35 media
+drwxr-xr-x  <span style="color:#ae81ff">7</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:38 usr
+drwxr-xr-x  <span style="color:#ae81ff">4</span> root <span style="color:#ae81ff">2000</span>  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:35 vendor
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:35 wifi
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root <span style="color:#ae81ff">2000</span>  <span style="color:#ae81ff">4096</span> Apr <span style="color:#ae81ff">21</span> 10:45 xbin
+</code></pre></div><p>Pretty much all of the applications are the in <code>/app</code> folder. Each app has both .apk and .odex, e.g:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ls -l /tmp/car/app/HKMC_EngineerMode.*
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">2124079</span> Apr <span style="color:#ae81ff">21</span> 10:50 /tmp/car/app/HKMC_EngineerMode.apk
+-rw-r--r-- <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">1630136</span> Apr <span style="color:#ae81ff">21</span> 10:50 /tmp/car/app/HKMC_EngineerMode.odex
+</code></pre></div><p>I have used <a href="https://github.com/JesusFreke/smali">baksmali</a> to convert odex files to smali and <a href="https://github.com/skylot/jadx">jadx</a> to decompile smali to Java.
 Let&rsquo;s look into the apps for Engineering Mode and then software updates.</p>
-
-<pre><code class="language-shell">$ java -jar baksmali-2.5.2.jar deodex -a 17 -d /tmp/car/framework -o engmode /tmp/car/app/HKMC_EngineerMode.odex
-$ java -jar baksmali-2.5.2.jar deodex -a 17 -d /tmp/car/framework -o swupdate /tmp/car/app/HKMC_SwUpdate.odex
-</code></pre>
-
-<h2 id="engineering-mode-password">Engineering mode password</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ java -jar baksmali-2.5.2.jar deodex -a <span style="color:#ae81ff">17</span> -d /tmp/car/framework -o engmode /tmp/car/app/HKMC_EngineerMode.odex
+$ java -jar baksmali-2.5.2.jar deodex -a <span style="color:#ae81ff">17</span> -d /tmp/car/framework -o swupdate /tmp/car/app/HKMC_SwUpdate.odex
+</code></pre></div><h2 id="engineering-mode-password">Engineering mode password</h2>
 <p>The password for the engineering mode is obtained in the <code>getKeyString()</code> method of <code>com.hkmc.system.app.engineering.ime.InputPasswordExt</code>.
 It takes the last digit of the current year and then it does a resource lookup:
 <a href="/images/engmode-pwd1.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/engmode-pwd1.png" >
 </div>
+
 </a></p>
-
 <p>These are the corresponding resource strings:</p>
-
 <p><a href="/images/engmode-pwd2.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/engmode-pwd2.png" >
 </div>
+
 </a></p>
-
 <p>This year&rsquo;s password is <strong>2702</strong>. I tried it on the car and it worked:</p>
-
 <p><a href="/images/engmode-unlocked.jpg">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/engmode-unlocked.jpg" >
 </div>
+
 </a></p>
-
 <h2 id="software-update-password">Software update password</h2>
-
 <p>Even though I can extract firmware updates with the keys derived with <code>bkcrack</code>, I was curious to find out the password for <code>update_package.zip</code>.
 A simple grep for <code>&quot;update_package.zip&quot;</code> leads to the <code>getPassword()</code> method of <code>com.hkmc.system.app.swupdate.ImageFileCopy</code>:</p>
-
 <p><a href="/images/update-pwd.png">
+
 <div class="pure-u-1-1">
   <img class="pure-img" src="/images/update-pwd.png" >
 </div>
+
 </a></p>
-
 <p>The static password &ldquo;+Ekfrl51Qkshsk#@zpdhkdWkd~-f&rdquo; didn&rsquo;t work. In my case the password was derived from the concatenation of the following system properties:</p>
-
-<pre><code class="language-text">ro.product.model=daudioplus
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">ro.product.model=daudioplus
 ro.product.brand=hyundai
 ro.product.name=tlfl_eu
 ro.product.device=daudiopluslow_tlfl_eu
@@ -438,18 +404,11 @@ ro.product.cpu.abi2=armeabi
 ro.product.manufacturer=mobis
 ro.product.locale.language=en
 ro.product.locale.region=GB
-</code></pre>
-
-<p>The <code>SHA512Checking()</code> method computes SHA512 digest of the given string and returns the result as uppercase hex string.
+</code></pre></div><p>The <code>SHA512Checking()</code> method computes SHA512 digest of the given string and returns the result as uppercase hex string.
 Doing this twice and taking a substring:</p>
-
-<pre><code class="language-java">SHA512Checking(SHA512Checking(tmp1)).substring(10, 38) = &quot;15DAA85C8D44B3979CD152A387F6&quot;
-</code></pre>
-
-<p>The password is <strong>15DAA85C8D44B3979CD152A387F6</strong></p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">SHA512Checking<span style="color:#f92672">(</span>SHA512Checking<span style="color:#f92672">(</span>tmp1<span style="color:#f92672">)).</span><span style="color:#a6e22e">substring</span><span style="color:#f92672">(</span>10<span style="color:#f92672">,</span> 38<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;15DAA85C8D44B3979CD152A387F6&#34;</span>
+</code></pre></div><p>The password is <strong>15DAA85C8D44B3979CD152A387F6</strong></p>
 <h2 id="future-work">Future work</h2>
-
 <p>I am pretty sure that I can create a firmware update with backdoor and get a root shell.
 But there is a small chance for something to go wrong and brick my car, so I am not going to do this for now :)
 I have some ideas how to exploit the kernel with the information from the engineering mode, so I will try this first.
@@ -475,8 +434,14 @@ The ultimate goal, of course, is to play Doom on my car screen.</p>
   </div>
   <div class="pure-u-10-24">
     
+    <nav class="next">
+      <a href="https://xakcop.com/post/hyundai-hack-2/">Hyundai Head Unit Hacking</a>
+    </nav>
+    
   </div>
   <div class="pure-u-1-24" style="text-align: right;">
+    
+    <a href="https://xakcop.com/post/hyundai-hack-2/"><i class="fa fa-chevron-right"></i></a>
     
   </div>
 </div>

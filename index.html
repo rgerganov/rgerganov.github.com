@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>random hacks</title>
 
@@ -196,7 +196,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -216,6 +216,45 @@
 </div>
 
 <div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="https://xakcop.com/post/hyundai-hack-2/">Hyundai Head Unit Hacking</a></h2>
+
+    <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>17 Jan 2023, 11:55</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  </header>
+
+  <p>
+  In the previous post I have shown how to crack the official firmware for Hyundai Tucson 2020 and reverse engineer it. At the end I was thinking that I can simply modify the update package, zip it again with the same password and push it to the car. But it turned out it is not that simple. The update package is signed with an RSA key which corresponds to the daudio.
+  </p>
+
+  
+  <footer>
+    <a href="/post/hyundai-hack-2/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
+
   
     <article>
   <header>
@@ -246,6 +285,8 @@
 
   <p>
   I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:
+ 
+I also found the password protected Engineering Mode which appears by tapping 5 times on the left from the Update button and 2 times on the right:
   </p>
 
   
@@ -573,46 +614,6 @@ The box is running both telnet and ssh but there is no default password. The nex
   
   <footer>
     <a href="/post/root-hs6020/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://xakcop.com/post/vmw-kernel-debugging/">Debugging the Linux kernel with VMware</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>07 Mar 2019, 16:33</time>
-  </div>
-
-  
-
-  
-  
-  
-  
-
-  
-  
-  
-  
-
-</div>
-
-  </header>
-
-  <p>
-  I am playing with emulated HID devices in Linux and found a kernel bug when using the usb_f_hid and dummy_hcd kernel modules. I won&rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:
- Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0  After executing step 3, the machine hangs in a way which makes it clear that it&rsquo;s not a userspace problem but a kernel one.
-  </p>
-
-  
-  <footer>
-    <a href="/post/vmw-kernel-debugging/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
   </footer>
   
 </article>

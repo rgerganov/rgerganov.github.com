@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>SoftHSMv2 internals &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -229,32 +229,23 @@
 
 </div>
 
-  
-
-<p><a href="https://github.com/opendnssec/SoftHSMv2">SoftHSMv2</a> is a software implementation of the PCKS#11 interface.
+  <p><a href="https://github.com/opendnssec/SoftHSMv2">SoftHSMv2</a> is a software implementation of the PCKS#11 interface.
 It is often used as replacement for real HSM devices in test environments where protecting key material is not a strong requirement.
 In this post I will explain how the state of SoftHSMv2 is persisted, the security behind it and what can be improved.</p>
-
 <h1 id="tokens-and-objects">Tokens and objects</h1>
-
 <p>Token is the PKCS#11 term for something that stores cryptographic objects and performs cryptographic operations.
 In SoftHSMv2 each token is organized as a directory containing files that represent token&rsquo;s objects.
 All token directories have a common root which by default is <code>/var/lib/softhsm/tokens</code>.
 Object files have an <code>.object</code> extension:</p>
-
-<pre><code class="language-sh">$ ls /var/lib/softhsm/tokens/643f45af-4f11-54c9-6edb-3578f9e3ea47/*object
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ls /var/lib/softhsm/tokens/643f45af-4f11-54c9-6edb-3578f9e3ea47/*object
 /var/lib/softhsm/tokens/643f45af-4f11-54c9-6edb-3578f9e3ea47/7bfd8494-0a71-a984-cb8e-97dd6036dce8.object
 /var/lib/softhsm/tokens/643f45af-4f11-54c9-6edb-3578f9e3ea47/7cb6bfc2-3526-18fe-1c02-f45a94e482c4.object
 /var/lib/softhsm/tokens/643f45af-4f11-54c9-6edb-3578f9e3ea47/token.object
-</code></pre>
-
-<h1 id="object-encryption">Object encryption</h1>
-
+</code></pre></div><h1 id="object-encryption">Object encryption</h1>
 <p>Each token is initialized with user PIN and SO PIN. SoftHSMv2 is using the user PIN to derive AES 256bit master key.
 For every token it also generates a random AES token key which is used to encrypt and decrypt sensitive object attributes in the corresponding token.
 Finally, SofthHSMv2 encrypts the token key with the master key and saves it to <code>token.object</code> in the token directory.
 This is the pseudocode for all of this:</p>
-
 <pre><code>salt = RAND(8)
 masterKey = KDF(salt, PIN)
 tokenKey = RAND(32)
@@ -262,59 +253,42 @@ IV = RAND(16)
 magic = &quot;RJR&quot;
 encryptedBlob = AES256-CBC(magic || tokenKey, masterKey, IV)
 save(&quot;token.object&quot;, salt || IV || encryptedBlob)
-</code></pre>
-
-<p>You can find the real C++ implementation in <a href="https://github.com/opendnssec/SoftHSMv2/blob/develop/src/lib/data_mgr/SecureDataManager.cpp">SecureDataManager.cpp</a> and <a href="https://github.com/opendnssec/SoftHSMv2/blob/develop/src/lib/data_mgr/RFC4880.cpp">RFC4880.cpp</a>.</p>
-
+</code></pre><p>You can find the real C++ implementation in <a href="https://github.com/opendnssec/SoftHSMv2/blob/develop/src/lib/data_mgr/SecureDataManager.cpp">SecureDataManager.cpp</a> and <a href="https://github.com/opendnssec/SoftHSMv2/blob/develop/src/lib/data_mgr/RFC4880.cpp">RFC4880.cpp</a>.</p>
 <p>So what is the purpose of these magic bytes which are concatenated with the <code>tokenKey</code>? This is basically a poor man&rsquo;s implementation of authenticated encryption.
 When a user tries to login with a PIN, SoftHSMv2 determines if the specified PIN is correct by decrypting the <code>encryptedBlob</code> and checking if it starts with the magic bytes.
 I will talk about how this can be improved but first let&rsquo;s see an example for how to derive <code>masterKey</code> and <code>tokenKey</code> if we know the user PIN.</p>
-
 <h2 id="example">Example</h2>
-
 <p>Object files can be dumped with the <code>softhsm2-dump-file</code> utility. Let&rsquo;s dump <code>token.object</code> which contains the encrypted <code>tokenKey</code>:</p>
-
-<pre><code class="language-sh">$ softhsm2-dump-file /var/lib/softhsm/tokens/2d0d4809-45cc-93b1-4b3b-21ef36a33837/token.object
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ softhsm2-dump-file /var/lib/softhsm/tokens/2d0d4809-45cc-93b1-4b3b-21ef36a33837/token.object
 ...
-00 00 00 00 80 00 53 4d CKA_OS_USERPIN
-00 00 00 00 00 00 00 03 byte string attribute
-00 00 00 00 00 00 00 48 (length 72)
-07 b1 79 16 02 74 f1 8f &lt;..y..t..&gt;
-57 70 54 a9 81 ea 8e b8 &lt;WpT.....&gt;
-28 a4 d4 23 d5 78 cc 16 &lt;(..#.x..&gt;
-7f 7d a0 3d 25 54 a9 67 &lt;.}.=%T.g&gt;
-5e ba 0e b2 90 8b ef 08 &lt;^.......&gt;
-8b d8 44 21 8a 92 3d d8 &lt;..D!..=.&gt;
-4a 83 6a 2c 68 70 d5 fe &lt;J.j,hp..&gt;
-7b 46 bc 38 1b d0 e6 64 &lt;{F.8...d&gt;
-35 49 8c 7c c2 e9 83 50 &lt;5I.|...P&gt;
-</code></pre>
-
-<p>The <code>CKA_OS_USERPIN</code> attribute is 72 bytes which is the concatenation of salt (8 bytes), IV (16 bytes) and encrypted blob (48 bytes).
+<span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">80</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">53</span> 4d CKA_OS_USERPIN
+<span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">03</span> byte string attribute
+<span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">48</span> <span style="color:#f92672">(</span>length 72<span style="color:#f92672">)</span>
+<span style="color:#ae81ff">07</span> b1 <span style="color:#ae81ff">79</span> <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">02</span> <span style="color:#ae81ff">74</span> f1 8f &lt;..y..t..&gt;
+<span style="color:#ae81ff">57</span> <span style="color:#ae81ff">70</span> <span style="color:#ae81ff">54</span> a9 <span style="color:#ae81ff">81</span> ea 8e b8 &lt;WpT.....&gt;
+<span style="color:#ae81ff">28</span> a4 d4 <span style="color:#ae81ff">23</span> d5 <span style="color:#ae81ff">78</span> cc <span style="color:#ae81ff">16</span> &lt;<span style="color:#f92672">(</span>..#.x..&gt;
+7f 7d a0 3d <span style="color:#ae81ff">25</span> <span style="color:#ae81ff">54</span> a9 <span style="color:#ae81ff">67</span> &lt;.<span style="color:#f92672">}</span>.<span style="color:#f92672">=</span>%T.g&gt;
+5e ba 0e b2 <span style="color:#ae81ff">90</span> 8b ef <span style="color:#ae81ff">08</span> &lt;^.......&gt;
+8b d8 <span style="color:#ae81ff">44</span> <span style="color:#ae81ff">21</span> 8a <span style="color:#ae81ff">92</span> 3d d8 &lt;..D!..<span style="color:#f92672">=</span>.&gt;
+4a <span style="color:#ae81ff">83</span> 6a 2c <span style="color:#ae81ff">68</span> <span style="color:#ae81ff">70</span> d5 fe &lt;J.j,hp..&gt;
+7b <span style="color:#ae81ff">46</span> bc <span style="color:#ae81ff">38</span> 1b d0 e6 <span style="color:#ae81ff">64</span> &lt;<span style="color:#f92672">{</span>F.8...d&gt;
+<span style="color:#ae81ff">35</span> <span style="color:#ae81ff">49</span> 8c 7c c2 e9 <span style="color:#ae81ff">83</span> <span style="color:#ae81ff">50</span> &lt;5I.|...P&gt;
+</code></pre></div><p>The <code>CKA_OS_USERPIN</code> attribute is 72 bytes which is the concatenation of salt (8 bytes), IV (16 bytes) and encrypted blob (48 bytes).
 Let&rsquo;s put these into shell variables:</p>
-
-<pre><code class="language-sh">salt=07b179160274f18f
-IV=577054a981ea8eb828a4d423d578cc16
-encryptedBlob=7f7da03d2554a9675eba0eb2908bef088bd844218a923dd84a836a2c6870d5fe7b46bc381bd0e66435498c7cc2e98350
-</code></pre>
-
-<p>With the correct PIN (1234) and <a href="https://gist.github.com/rgerganov/fa58a7308c5d25f6652a0f25196d4181">this</a> script
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">salt<span style="color:#f92672">=</span>07b179160274f18f
+IV<span style="color:#f92672">=</span>577054a981ea8eb828a4d423d578cc16
+encryptedBlob<span style="color:#f92672">=</span>7f7da03d2554a9675eba0eb2908bef088bd844218a923dd84a836a2c6870d5fe7b46bc381bd0e66435498c7cc2e98350
+</code></pre></div><p>With the correct PIN (1234) and <a href="https://gist.github.com/rgerganov/fa58a7308c5d25f6652a0f25196d4181">this</a> script
 we can obtain the <code>masterKey</code> and the <code>tokenKey</code> for this token:</p>
-
-<pre><code class="language-sh">$ ./softhsmv2.py 1234 $salt $IV $encryptedBlob
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ./softhsmv2.py <span style="color:#ae81ff">1234</span> $salt $IV $encryptedBlob
 masterKey: 5fa8bdf96b1aa11da6aac165a0e4c3fd9d4b48838cbc58945e3ee27bc7fcf281
 tokenKey: 302aa706005fb36002b65f65251d1621b183b04c680e3ec143210b7b63da9b85
-</code></pre>
-
-<p>Now we can use the <code>tokenKey</code> to decrypt the rest of the object files in this token.</p>
-
+</code></pre></div><p>Now we can use the <code>tokenKey</code> to decrypt the rest of the object files in this token.</p>
 <h1 id="object-integrity">Object integrity</h1>
-
 <p>SoftHSM is using AES-CBC and the <code>tokenKey</code> to encrypt all sensitive object attributes such as private keys.
 The problem with this approach is that there is no way to guarantee the integrity of the object files.
 If an attacker gets access to the filesystem, they can modify the object files leaving this undetected by the SoftHSM.
 In this situation users will get incorrect results when using SoftHSM instead of error saying that the store has been tampered.</p>
-
 <p>This problem can be easily solved by replacing AES-CBC with some of the authenticated modes of AES such as AES-GCM.
 SoftHSM already supports AES-GCM and I have submitted this <a href="https://github.com/opendnssec/SoftHSMv2/pull/627">PR</a>.
 However, backward compatibility with old tokens requires more work.</p>

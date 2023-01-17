@@ -6,11 +6,20 @@
     <description>Recent content in Posts on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2016-2022. All rights reserved.</copyright>
-    <lastBuildDate>Fri, 12 Aug 2022 10:00:13 +0300</lastBuildDate>
+    <copyright>&amp;copy; 2016-2023. All rights reserved.</copyright>
+    <lastBuildDate>Tue, 17 Jan 2023 11:55:12 +0200</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hyundai Head Unit Hacking</title>
+      <link>https://xakcop.com/post/hyundai-hack-2/</link>
+      <pubDate>Tue, 17 Jan 2023 11:55:12 +0200</pubDate>
+      
+      <guid>https://xakcop.com/post/hyundai-hack-2/</guid>
+      <description>In the previous post I have shown how to crack the official firmware for Hyundai Tucson 2020 and reverse engineer it. At the end I was thinking that I can simply modify the update package, zip it again with the same password and push it to the car. But it turned out it is not that simple. The update package is signed with an RSA key which corresponds to the daudio.</description>
+    </item>
     
     <item>
       <title>Hacking Hyundai Tucson 2020</title>
@@ -18,7 +27,9 @@
       <pubDate>Fri, 12 Aug 2022 10:00:13 +0300</pubDate>
       
       <guid>https://xakcop.com/post/hyundai-hack/</guid>
-      <description>I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&amp;rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:</description>
+      <description>I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&amp;rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:
+ 
+I also found the password protected Engineering Mode which appears by tapping 5 times on the left from the Update button and 2 times on the right:</description>
     </item>
     
     <item>

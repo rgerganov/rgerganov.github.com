@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>Cloning RSA tokens with Frida &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -233,67 +233,52 @@
 RSA provides software tokens which are mobile applications that generate one-time passwords that change every minute or so.
 These applications are closed source and they use proprietary protocol to provision the token.
 This basically means that you are vendor locked-in with something that relies on security through obscurity.</p>
-
 <p>I wanted to have an open-source implementation of RSA SecurID and until now I have been using <a href="https://github.com/cernekee/stoken">stoken</a>
 together with <a href="https://github.com/dlenski/rsa_ct_kip">rsa_ct_kip</a> for token provisioning. This has been working great until
 my employer decided to switch to the new <a href="https://play.google.com/store/apps/details?id=com.rsa.via">RSA SecurID Authenticate</a> app which
 uses some different kind of token provisioning that doesn&rsquo;t work with <code>rsa_ct_kip</code>. At this point I have two options:</p>
-
 <ol>
 <li>Reverse engineer the mobile app and find how the provisioning is done.
 I already did this for the old <a href="https://play.google.com/store/apps/details?id=com.rsa.securidapp">app</a>
 and this was my contribution to the <code>rsa_ct_kip</code> project.</li>
 <li>Provision a token with the new app on a rooted phone and then &ldquo;export&rdquo; it from there.</li>
 </ol>
-
 <p>Reversing the provisioning protocol will take time, so I decided to go with option 2 for the short term.
 I already know that RSA tokens need two things to be provisioned &ndash; serial number and root seed (16 bytes).
 Once I get those, I can continue using <code>stoken</code> on all of my devices.</p>
-
 <p>My plan was to install the RSA app on my rooted Nexus 5, provision a token and then analyze the application DB.
 The application DB has a <code>SERIALNUMBER</code> and <code>ROOTSEED</code> columns. The serial number was written in plain text but the root seed was a huge binary blob.
 Turns out we need some reversing after all &hellip;</p>
-
 <p>This is where I decided to give <a href="https://frida.re/">Frida</a> a try. Frida is a dynamic instrumentation toolkit that supports all major platforms, including Android.
 It allows you to install hooks into a target process that can trace or change execution flows. It&rsquo;s pretty amazing!</p>
-
 <p>I managed to extract the serial number and the root seed from <a href="https://play.google.com/store/apps/details?id=com.rsa.via">RSA SecurID Authenticate</a> ver.3.1.0 with the following script:</p>
-
-<pre><code class="language-javascript">function bytes2hex(array) {
-    var result = '';
-    for (var i = 0; i &lt; array.length; ++i) {
-        result += ('0' + (array[i] &amp; 0xFF).toString(16)).slice(-2);
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">bytes2hex</span>(<span style="color:#a6e22e">array</span>) {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">result</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">array</span>.<span style="color:#a6e22e">length</span>; <span style="color:#f92672">++</span><span style="color:#a6e22e">i</span>) {
+        <span style="color:#a6e22e">result</span> <span style="color:#f92672">+=</span> (<span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#f92672">+</span> (<span style="color:#a6e22e">array</span>[<span style="color:#a6e22e">i</span>] <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xFF</span>).<span style="color:#a6e22e">toString</span>(<span style="color:#ae81ff">16</span>)).<span style="color:#a6e22e">slice</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>);
     }
-    result += ' (' + array.length + ' bytes)'
-    return result;
+    <span style="color:#a6e22e">result</span> <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#39; (&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">array</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; bytes)&#39;</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">result</span>;
 }
 
-Java.perform(function() {
-    Java.use('com.rsa.securidlib.g.gg').$init.overload('[B').implementation = function(byteArr) {
-        if (byteArr.length == 16) {
-            console.log(&quot;Seed: &quot; + bytes2hex(byteArr));
+<span style="color:#a6e22e">Java</span>.<span style="color:#a6e22e">perform</span>(<span style="color:#66d9ef">function</span>() {
+    <span style="color:#a6e22e">Java</span>.<span style="color:#a6e22e">use</span>(<span style="color:#e6db74">&#39;com.rsa.securidlib.g.gg&#39;</span>).<span style="color:#a6e22e">$init</span>.<span style="color:#a6e22e">overload</span>(<span style="color:#e6db74">&#39;[B&#39;</span>).<span style="color:#a6e22e">implementation</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">byteArr</span>) {
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">byteArr</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">16</span>) {
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Seed: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">bytes2hex</span>(<span style="color:#a6e22e">byteArr</span>));
         }
-        return this.$init(byteArr);
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">$init</span>(<span style="color:#a6e22e">byteArr</span>);
     }
-    Java.use('com.rsa.securidlib.android.AndroidSecurIDLib').getNextOtpWithDataProtection.implementation = function(str, byteArr, map) {
-        console.log(&quot;Serial number: &quot; + str);
-        return this.getNextOtpWithDataProtection(str, byteArr, map);
+    <span style="color:#a6e22e">Java</span>.<span style="color:#a6e22e">use</span>(<span style="color:#e6db74">&#39;com.rsa.securidlib.android.AndroidSecurIDLib&#39;</span>).<span style="color:#a6e22e">getNextOtpWithDataProtection</span>.<span style="color:#a6e22e">implementation</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">str</span>, <span style="color:#a6e22e">byteArr</span>, <span style="color:#a6e22e">map</span>) {
+        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Serial number: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">str</span>);
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">getNextOtpWithDataProtection</span>(<span style="color:#a6e22e">str</span>, <span style="color:#a6e22e">byteArr</span>, <span style="color:#a6e22e">map</span>);
     }
 }); 
-</code></pre>
-
-<p>Once you have the serial number and the seed, you can use <a href="https://gist.github.com/dlenski/d6d4df40c8dd538339f750902d68bcfb">this script</a>
+</code></pre></div><p>Once you have the serial number and the seed, you can use <a href="https://gist.github.com/dlenski/d6d4df40c8dd538339f750902d68bcfb">this script</a>
 to get the token into a CTF format (expiration doesn&rsquo;t matter):</p>
-
-<pre><code class="language-bash">$ SEED=&lt;seed&gt; SN=&lt;serial_number&gt; EXPIRATION=2030/12/31 ./make_RSA_token.sh
-</code></pre>
-
-<p>and then import it into <code>stoken</code>:</p>
-
-<pre><code class="language-bash">$ stoken import --token=&lt;ctf_token&gt;
-</code></pre>
-
-<p>Cheers :)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ SEED<span style="color:#f92672">=</span>&lt;seed&gt; SN<span style="color:#f92672">=</span>&lt;serial_number&gt; EXPIRATION<span style="color:#f92672">=</span>2030/12/31 ./make_RSA_token.sh
+</code></pre></div><p>and then import it into <code>stoken</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ stoken import --token<span style="color:#f92672">=</span>&lt;ctf_token&gt;
+</code></pre></div><p>Cheers :)</p>
 
 
   

@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.59.1" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <title>random hacks</title>
 
@@ -196,7 +196,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2022. All rights reserved.</small>
+    <small>&copy; 2016-2023. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -216,6 +216,46 @@
 </div>
 
 <div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="https://xakcop.com/post/vmw-kernel-debugging/">Debugging the Linux kernel with VMware</a></h2>
+
+    <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>07 Mar 2019, 16:33</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  </header>
+
+  <p>
+  I am playing with emulated HID devices in Linux and found a kernel bug when using the usb_f_hid and dummy_hcd kernel modules. I won&rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:
+ Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0  After executing step 3, the machine hangs in a way which makes it clear that it&rsquo;s not a userspace problem but a kernel one.
+  </p>
+
+  
+  <footer>
+    <a href="/post/vmw-kernel-debugging/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
+
   
     <article>
   <header>
