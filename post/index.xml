@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2023. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 17 Jan 2023 11:55:12 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 27 Sep 2023 14:28:02 +0300</lastBuildDate>
     
 	<atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Making a Chromecast receiver</title>
+      <link>https://xakcop.com/post/shanocast/</link>
+      <pubDate>Wed, 27 Sep 2023 14:28:02 +0300</pubDate>
+      
+      <guid>https://xakcop.com/post/shanocast/</guid>
+      <description>I made a Chromecast receiver which works on Linux. It is called Shanocast and it can mirror a Chrome tab or the entire desktop. Here is a demo:
+Your browser does not support the video tag.  The implementation is based on Openscreen which is an open-source implementation of the Chromecast protocol. The tricky part is the receiver authentication. Google Chrome authenticates the receiver and refuses to stream to it if the authentication fails.</description>
+    </item>
     
     <item>
       <title>Hyundai Head Unit Hacking</title>
