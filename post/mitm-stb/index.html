@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>MitM&#39;ing my STB &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -238,7 +238,7 @@ decided to see what goes on the wire.  The easiest way to do this is to create
 an ethernet bridge between the provider and the STB and then capture the
 traffic.  I used my MacBook with a second USB Ethernet adapter. In OSX, an
 ethernet bridge is created like this:</p>
-<pre><code>    ifconfig bridge1 create
+<pre tabindex="0"><code>    ifconfig bridge1 create
     ifconfig bridge1 up
     ifconfig bridge1 addm en4 addm en5
     sysctl -w net.inet.ip.forwarding=1
@@ -282,7 +282,7 @@ to the STB. This is how it looks like from the top:</p>
 <p>Below are the relevant config files on the Raspberry Pi which setup the
 networking and configure nfqsed to replace one TV channel with another:</p>
 <h4 id="etcnetworkinterfaces">/etc/network/interfaces</h4>
-<pre><code>iface br0 inet static
+<pre tabindex="0"><code>iface br0 inet static
     bridge_ports eth0 eth1
     address 192.168.1.10
     netmask 255.255.255.0
@@ -290,9 +290,9 @@ networking and configure nfqsed to replace one TV channel with another:</p>
     dns-nameservers 8.8.8.8
     up iptables -A FORWARD -p tcp --destination-port 554 -j NFQUEUE --queue-num 0
 </code></pre><h4 id="etcrclocal">/etc/rc.local</h4>
-<pre><code>/home/pi/nfqsed/nfqsed -f /home/pi/rules.txt &amp;
+<pre tabindex="0"><code>/home/pi/nfqsed/nfqsed -f /home/pi/rules.txt &amp;
 </code></pre><h4 id="homepirulestxt">/home/pi/rules.txt</h4>
-<pre><code># Fen TV / HBO HD
+<pre tabindex="0"><code># Fen TV / HBO HD
 /ch13121216533621227255/ch12092914401822894191
 # Folklor TV / HBO Comedy HD
 /ch11123010551095204329/ch12092914413728185379

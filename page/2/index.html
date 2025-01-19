@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>random hacks</title>
 
@@ -196,7 +196,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -216,6 +216,46 @@
 </div>
 
 <div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="https://xakcop.com/post/cloud-air-purifier/">Controlling purifiers over the internet</a></h2>
+
+    <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>30 Nov 2019, 11:04</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  </header>
+
+  <p>
+  Last time I reverse engineered how AirMatters controls air purifiers which are in the same local network. This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.
+Network analysis The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters. The application loads its CA certificates from /resources/assets and tries to establish a trust chain to them.
+  </p>
+
+  
+  <footer>
+    <a href="/post/cloud-air-purifier/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
+
   
     <article>
   <header>
@@ -286,7 +326,7 @@ The box is running both telnet and ssh but there is no default password. The nex
 
   <p>
   I am playing with emulated HID devices in Linux and found a kernel bug when using the usb_f_hid and dummy_hcd kernel modules. I won&rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:
- Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0  After executing step 3, the machine hangs in a way which makes it clear that it&rsquo;s not a userspace problem but a kernel one.
+Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0 After executing step 3, the machine hangs in a way which makes it clear that it&rsquo;s not a userspace problem but a kernel one.
   </p>
 
   
@@ -320,7 +360,6 @@ The box is running both telnet and ssh but there is no default password. The nex
 
   <p>
   The air pollution in Sofia is really high during the winter, so I decided to buy an air purifier for my home. After some short research, I bought Philips AC2729:
- 
 it can purify and humidify the air at the same time, show particulate matter (PM 2.5) / humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows remote control with a mobile app. Being able to control the device with my phone sounds pretty cool but after reading so many stories about the so called Internet of Shit, I thought it&rsquo;d be a good idea to inspect what kind of data this thing sends and ultimately create my own tool to control it.
   </p>
 
@@ -363,7 +402,7 @@ it can purify and humidify the air at the same time, show particulate matter (PM
   This is a PoC for something I call &ldquo;virtual usb drive&rdquo;. The drive is created on Linux using the MSG kernel module. Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&rsquo;s pretty cool hack, so I decided to share it.
 DISCLAIMER: This is unofficial and unsupported, use it at your own risk.
 Here is a demo:
-  You can find the supporting scripts here.
+You can find the supporting scripts here.
   </p>
 
   
@@ -437,7 +476,7 @@ Corporate badge At work we use 125KHz passive RFID badges which are easy to clon
 
   <p>
   My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself:
- The only &ldquo;user interface&rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.
+The only &ldquo;user interface&rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.
   </p>
 
   

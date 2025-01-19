@@ -6,176 +6,127 @@
     <description>Recent content in Posts on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2016-2023. All rights reserved.</copyright>
-    <lastBuildDate>Wed, 27 Sep 2023 14:28:02 +0300</lastBuildDate>
-    
-	<atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>&amp;copy; 2016-2025. All rights reserved.</copyright>
+    <lastBuildDate>Sun, 19 Jan 2025 13:31:54 +0200</lastBuildDate>
+    <atom:link href="https://xakcop.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reversing MAGic Remote</title>
+      <link>https://xakcop.com/post/magic-remote/</link>
+      <pubDate>Sun, 19 Jan 2025 13:31:54 +0200</pubDate>
+      <guid>https://xakcop.com/post/magic-remote/</guid>
+      <description>If you have a MAG set-top box, you may know there is a mobile app called &amp;ldquo;MAGic Remote&amp;rdquo; which turns your phone into a remote controller. It looks like this:&#xA;Allowing remote control over the network is great but there is no public information on the protocol being used. MAGic Remote is also paid and I don&amp;rsquo;t quite understand why people should be giving money for something so simple. That was my motivation to reverse engineer the protocol and create an open-source client.</description>
+    </item>
     <item>
       <title>Making a Chromecast receiver</title>
       <link>https://xakcop.com/post/shanocast/</link>
       <pubDate>Wed, 27 Sep 2023 14:28:02 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/shanocast/</guid>
-      <description>I made a Chromecast receiver which works on Linux. It is called Shanocast and it can mirror a Chrome tab or the entire desktop. Here is a demo:
-Your browser does not support the video tag.  The implementation is based on Openscreen which is an open-source implementation of the Chromecast protocol. The tricky part is the receiver authentication. Google Chrome authenticates the receiver and refuses to stream to it if the authentication fails.</description>
+      <description>I made a Chromecast receiver which works on Linux. It is called Shanocast and it can mirror a Chrome tab or the entire desktop. Here is a demo:&#xA;Your browser does not support the video tag. The implementation is based on Openscreen which is an open-source implementation of the Chromecast protocol. The tricky part is the receiver authentication. Google Chrome authenticates the receiver and refuses to stream to it if the authentication fails.</description>
     </item>
-    
     <item>
       <title>Hyundai Head Unit Hacking</title>
       <link>https://xakcop.com/post/hyundai-hack-2/</link>
       <pubDate>Tue, 17 Jan 2023 11:55:12 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/hyundai-hack-2/</guid>
       <description>In the previous post I have shown how to crack the official firmware for Hyundai Tucson 2020 and reverse engineer it. At the end I was thinking that I can simply modify the update package, zip it again with the same password and push it to the car. But it turned out it is not that simple. The update package is signed with an RSA key which corresponds to the daudio.</description>
     </item>
-    
     <item>
       <title>Hacking Hyundai Tucson 2020</title>
       <link>https://xakcop.com/post/hyundai-hack/</link>
       <pubDate>Fri, 12 Aug 2022 10:00:13 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/hyundai-hack/</guid>
-      <description>I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&amp;rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:
- 
-I also found the password protected Engineering Mode which appears by tapping 5 times on the left from the Update button and 2 times on the right:</description>
+      <description>I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&amp;rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:&#xA;I also found the password protected Engineering Mode which appears by tapping 5 times on the left from the Update button and 2 times on the right:</description>
     </item>
-    
     <item>
       <title>Reversing 2.4GHz remote control</title>
       <link>https://xakcop.com/post/re-2.4ghz/</link>
       <pubDate>Mon, 18 Apr 2022 15:26:28 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/re-2.4ghz/</guid>
-      <description>I have an old project on Github called rf-car for controlling a radio car with HackRF. A few months ago, my daughter received a new RC car made by Dickie Toys:
- This car was faster than the previous one and it was more fun to play with. I thought it&amp;rsquo;d be great if I can add support for it in the rf-car project and the fun began.
-FCC docs The car works on 2.</description>
+      <description>I have an old project on Github called rf-car for controlling a radio car with HackRF. A few months ago, my daughter received a new RC car made by Dickie Toys:&#xA;This car was faster than the previous one and it was more fun to play with. I thought it&amp;rsquo;d be great if I can add support for it in the rf-car project and the fun began.&#xA;FCC docs The car works on 2.</description>
     </item>
-    
     <item>
       <title>Receiving SSTV from ISS</title>
       <link>https://xakcop.com/post/iss-sstv/</link>
       <pubDate>Thu, 24 Jun 2021 16:47:22 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/iss-sstv/</guid>
-      <description>Today I have successfully received and decoded an SSTV transmission from ISS. This is the result:
- In this post I will give a quick summary of what I have been using and how it worked for me.
-Hardware:  USRP B200 - this is a high-end SDR but RTL-SDR dongle should also be fine Dipole antenna - I bought this from the RTL-SDR store; each side of the dipole should be around 50cm to make it resonant to 145.</description>
+      <description>Today I have successfully received and decoded an SSTV transmission from ISS. This is the result:&#xA;In this post I will give a quick summary of what I have been using and how it worked for me.&#xA;Hardware: USRP B200 - this is a high-end SDR but RTL-SDR dongle should also be fine Dipole antenna - I bought this from the RTL-SDR store; each side of the dipole should be around 50cm to make it resonant to 145.</description>
     </item>
-    
     <item>
       <title>SoftHSMv2 internals</title>
       <link>https://xakcop.com/post/softhsmv2/</link>
       <pubDate>Tue, 13 Apr 2021 10:52:01 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/softhsmv2/</guid>
-      <description>SoftHSMv2 is a software implementation of the PCKS#11 interface. It is often used as replacement for real HSM devices in test environments where protecting key material is not a strong requirement. In this post I will explain how the state of SoftHSMv2 is persisted, the security behind it and what can be improved.
-Tokens and objects Token is the PKCS#11 term for something that stores cryptographic objects and performs cryptographic operations.</description>
+      <description>SoftHSMv2 is a software implementation of the PCKS#11 interface. It is often used as replacement for real HSM devices in test environments where protecting key material is not a strong requirement. In this post I will explain how the state of SoftHSMv2 is persisted, the security behind it and what can be improved.&#xA;Tokens and objects Token is the PKCS#11 term for something that stores cryptographic objects and performs cryptographic operations.</description>
     </item>
-    
     <item>
       <title>How many people are around</title>
       <link>https://xakcop.com/post/how-many-people/</link>
       <pubDate>Tue, 26 May 2020 17:41:25 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/how-many-people/</guid>
-      <description>There is a nice open-source project howmanypeoplearearound that counts the number of people around by sniffing WiFi probe requests sent from mobile phones.
-Well, now we have another method to do the same by exploiting the contact tracing functionality which is being added to iOS and Android. Cell phones are using Bluetooth Low Energy to transmit ephemeral IDs to nearby devices in order to discover encounters with other people. These IDs and the Bluetooth MAC changes every 15-20 minutes to prevent tracking of users.</description>
+      <description>There is a nice open-source project howmanypeoplearearound that counts the number of people around by sniffing WiFi probe requests sent from mobile phones.&#xA;Well, now we have another method to do the same by exploiting the contact tracing functionality which is being added to iOS and Android. Cell phones are using Bluetooth Low Energy to transmit ephemeral IDs to nearby devices in order to discover encounters with other people. These IDs and the Bluetooth MAC changes every 15-20 minutes to prevent tracking of users.</description>
     </item>
-    
     <item>
       <title>Signing files with Solo</title>
       <link>https://xakcop.com/post/solo-sign/</link>
       <pubDate>Mon, 23 Mar 2020 12:22:20 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/solo-sign/</guid>
-      <description>Solo is FIDO2 security key with open hardware and firmware. I have been following the project and using the key for quite a while now. It shares my believe that security solutions must be open. Solo is not only open but it also have developer edition, called Solo Hacker, which allows firmware modifications.
-I&amp;rsquo;ve been dealing with digital signatures a lot lately, so I thought why not use my Solo key to sign files?</description>
+      <description>Solo is FIDO2 security key with open hardware and firmware. I have been following the project and using the key for quite a while now. It shares my believe that security solutions must be open. Solo is not only open but it also have developer edition, called Solo Hacker, which allows firmware modifications.&#xA;I&amp;rsquo;ve been dealing with digital signatures a lot lately, so I thought why not use my Solo key to sign files?</description>
     </item>
-    
     <item>
       <title>Cloning RSA tokens with Frida</title>
       <link>https://xakcop.com/post/cloning-rsa/</link>
       <pubDate>Thu, 12 Dec 2019 10:13:20 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/cloning-rsa/</guid>
-      <description>At work we are using RSA SecurID for login to corporate services. RSA provides software tokens which are mobile applications that generate one-time passwords that change every minute or so. These applications are closed source and they use proprietary protocol to provision the token. This basically means that you are vendor locked-in with something that relies on security through obscurity.
-I wanted to have an open-source implementation of RSA SecurID and until now I have been using stoken together with rsa_ct_kip for token provisioning.</description>
+      <description>At work we are using RSA SecurID for login to corporate services. RSA provides software tokens which are mobile applications that generate one-time passwords that change every minute or so. These applications are closed source and they use proprietary protocol to provision the token. This basically means that you are vendor locked-in with something that relies on security through obscurity.&#xA;I wanted to have an open-source implementation of RSA SecurID and until now I have been using stoken together with rsa_ct_kip for token provisioning.</description>
     </item>
-    
     <item>
       <title>Controlling purifiers over the internet</title>
       <link>https://xakcop.com/post/cloud-air-purifier/</link>
       <pubDate>Sat, 30 Nov 2019 11:04:38 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/cloud-air-purifier/</guid>
-      <description>Last time I reverse engineered how AirMatters controls air purifiers which are in the same local network. This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.
-Network analysis The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters. The application loads its CA certificates from /resources/assets and tries to establish a trust chain to them.</description>
+      <description>Last time I reverse engineered how AirMatters controls air purifiers which are in the same local network. This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.&#xA;Network analysis The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters. The application loads its CA certificates from /resources/assets and tries to establish a trust chain to them.</description>
     </item>
-    
     <item>
       <title>Rooting HS6020 IPTV STB</title>
       <link>https://xakcop.com/post/root-hs6020/</link>
       <pubDate>Tue, 05 Nov 2019 17:12:08 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/root-hs6020/</guid>
-      <description>One of my co-workers brought a very old IPTV set-top-box in the office. The box was distributed by one of the very first IPTV providers in Sofia &amp;ndash; Megalan. I remember using one of those back in 2009. We decided to see how difficult is to root 10+ years old hardware and the fun began!
-The box is running both telnet and ssh but there is no default password. The next thing we tried, of course, is connecting a serial console.</description>
+      <description>One of my co-workers brought a very old IPTV set-top-box in the office. The box was distributed by one of the very first IPTV providers in Sofia &amp;ndash; Megalan. I remember using one of those back in 2009. We decided to see how difficult is to root 10+ years old hardware and the fun began!&#xA;The box is running both telnet and ssh but there is no default password. The next thing we tried, of course, is connecting a serial console.</description>
     </item>
-    
     <item>
       <title>Debugging the Linux kernel with VMware</title>
       <link>https://xakcop.com/post/vmw-kernel-debugging/</link>
       <pubDate>Thu, 07 Mar 2019 16:33:12 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/vmw-kernel-debugging/</guid>
-      <description>I am playing with emulated HID devices in Linux and found a kernel bug when using the usb_f_hid and dummy_hcd kernel modules. I won&amp;rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:
- Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0  After executing step 3, the machine hangs in a way which makes it clear that it&amp;rsquo;s not a userspace problem but a kernel one.</description>
+      <description>I am playing with emulated HID devices in Linux and found a kernel bug when using the usb_f_hid and dummy_hcd kernel modules. I won&amp;rsquo;t go into details of what I am trying to achieve (saving this for a future post) but focus on how I troubleshooted this particular bug. As of this writing, it is 100% reproducible with 4.15.0-45 kernel and these steps:&#xA;Load libcomposite and dummy_hcd into the kernel Create an emulated HID device with configfs Write something to /dev/hidg0 After executing step 3, the machine hangs in a way which makes it clear that it&amp;rsquo;s not a userspace problem but a kernel one.</description>
     </item>
-    
     <item>
       <title>Controlling my Air Purifier</title>
       <link>https://xakcop.com/post/ctrl-air-purifier/</link>
       <pubDate>Sat, 19 Jan 2019 10:49:37 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/ctrl-air-purifier/</guid>
-      <description>The air pollution in Sofia is really high during the winter, so I decided to buy an air purifier for my home. After some short research, I bought Philips AC2729:
- 
-it can purify and humidify the air at the same time, show particulate matter (PM 2.5) / humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows remote control with a mobile app. Being able to control the device with my phone sounds pretty cool but after reading so many stories about the so called Internet of Shit, I thought it&amp;rsquo;d be a good idea to inspect what kind of data this thing sends and ultimately create my own tool to control it.</description>
+      <description>The air pollution in Sofia is really high during the winter, so I decided to buy an air purifier for my home. After some short research, I bought Philips AC2729:&#xA;it can purify and humidify the air at the same time, show particulate matter (PM 2.5) / humidity, and features quiet sleep mode. It also has a Wi-Fi interface which allows remote control with a mobile app. Being able to control the device with my phone sounds pretty cool but after reading so many stories about the so called Internet of Shit, I thought it&amp;rsquo;d be a good idea to inspect what kind of data this thing sends and ultimately create my own tool to control it.</description>
     </item>
-    
     <item>
       <title>Virtual USB drive</title>
       <link>https://xakcop.com/post/virt-usb-drive/</link>
       <pubDate>Wed, 22 Mar 2017 10:21:41 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/virt-usb-drive/</guid>
-      <description>This is a PoC for something I call &amp;ldquo;virtual usb drive&amp;rdquo;. The drive is created on Linux using the MSG kernel module. Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&amp;rsquo;s pretty cool hack, so I decided to share it.
-DISCLAIMER: This is unofficial and unsupported, use it at your own risk.
-Here is a demo:
-  You can find the supporting scripts here.</description>
+      <description>This is a PoC for something I call &amp;ldquo;virtual usb drive&amp;rdquo;. The drive is created on Linux using the MSG kernel module. Then it can be attached to VMs running on VMware vSphere using VMRC 5.5. I think it&amp;rsquo;s pretty cool hack, so I decided to share it.&#xA;DISCLAIMER: This is unofficial and unsupported, use it at your own risk.&#xA;Here is a demo:&#xA;You can find the supporting scripts here.</description>
     </item>
-    
     <item>
       <title>Cloning RFID cards</title>
       <link>https://xakcop.com/post/cloning-rfid/</link>
       <pubDate>Sun, 29 Jan 2017 13:27:39 +0200</pubDate>
-      
       <guid>https://xakcop.com/post/cloning-rfid/</guid>
-      <description>This post summarizes my experience with cloning RFID cards that I am using on daily basis. There is nothing new here, just a summary of well-known hacks that I found on the internet.
-Corporate badge At work we use 125KHz passive RFID badges which are easy to clone. Each badge has unique ID, so the first step is to read this ID. I have been using this DIY reader based on an Arduino:</description>
+      <description>This post summarizes my experience with cloning RFID cards that I am using on daily basis. There is nothing new here, just a summary of well-known hacks that I found on the internet.&#xA;Corporate badge At work we use 125KHz passive RFID badges which are easy to clone. Each badge has unique ID, so the first step is to read this ID. I have been using this DIY reader based on an Arduino:</description>
     </item>
-    
     <item>
       <title>MitM&#39;ing my STB</title>
       <link>https://xakcop.com/post/mitm-stb/</link>
       <pubDate>Tue, 27 Sep 2016 11:19:21 +0300</pubDate>
-      
       <guid>https://xakcop.com/post/mitm-stb/</guid>
-      <description>My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself:
- The only &amp;ldquo;user interface&amp;rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.</description>
+      <description>My ISP is offering IPTV with a set-top-box (STB) device which is connected to the provider network and the TV itself:&#xA;The only &amp;ldquo;user interface&amp;rdquo; for the STB is the remote control. I was curious to find out if the traffic between the STB and the provider is encrypted, so I decided to see what goes on the wire. The easiest way to do this is to create an ethernet bridge between the provider and the STB and then capture the traffic.</description>
     </item>
-    
   </channel>
 </rss>

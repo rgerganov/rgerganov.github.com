@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.123.7">
+
+  <title>Reversing MAGic Remote &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://youtube.com/user/xakc0p" rel="me" target="_blank"><i class="fa fa-youtube-square fa-fw"></i>YouTube</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2025. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Reversing MAGic Remote</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>19 Jan 2025, 13:31</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  <p>If you have a <a href="https://www.infomir.eu/eng/products/iptv-stb/">MAG</a> set-top box, you may know there is a mobile app called <a href="https://play.google.com/store/apps/details?id=com.infomir.magicRemote&amp;hl=en">&ldquo;MAGic Remote&rdquo;</a> which turns your phone into a remote controller. It looks like this:</p>
+<p><a href="/images/magic-remote.png" title="MAGic Remote">
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/magic-remote-small.png" >
+</div>
+
+</a></p>
+<p>Allowing remote control over the network is great but there is no public information on the protocol being used.
+MAGic Remote is also paid and I don&rsquo;t quite understand why people should be giving money for something so simple.
+That was my motivation to reverse engineer the protocol and create an open-source client.</p>
+<h2 id="network-analysis">Network analysis</h2>
+<p>MAGic Remote discovers set-top boxes in the local network using <a href="https://en.wikipedia.org/wiki/Zero-configuration_networking">zeroconf</a>, looking for <code>_infomir_mobile_rc_service._tcp</code> services. Then it sends a pairing request to the set-top box which shows a pairing code on the TV. The user has to enter this code in the app to pair the devices:</p>
+
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/magic-remote-pair.png" alt="Pairing code">
+</div>
+
+
+<p>The first step is to capture the network traffic during the pairing process. Packets in red are sent by the app and packets in blue are sent by the set-top box:</p>
+
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/magic-remote-pcap.png" alt="Pairing packet dump">
+</div>
+
+
+<p>They seem to be using a request-response protocol over TCP and all messages have the following structure:</p>
+<pre tabindex="0"><code>[6 bytes]  - message header
+[32 bytes] - command
+[...]      - body
+</code></pre><p>The command is always sent in plain text (e.g. <code>pairing-reqpairing-reqpairing-re</code>, <code>pairing-complete-reqpairing-comp</code>, etc.),
+while the body is sometimes in binary and sometimes in plain text.</p>
+<p>The pairing code doesn&rsquo;t seem to be send in plain text anywhere, so I&rsquo;d expect it is used as mutual authentication between the app and the set-top box.</p>
+<h2 id="static-analysis">Static analysis</h2>
+<p>The go-to app for decompiling and static analysis of Android apps is <a href="https://github.com/skylot/jadx">jadx</a>.
+A quck search for encryption-related classes reveals the following class in the <code>I5</code> package:</p>
+
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/magic-remote-jadx.png" alt="Decompiled class">
+</div>
+
+
+<p>This method takes a password, appends a fixed suffix to it, hashes it with SHA1 and uses the first 16 bytes as the key for AES encryption.
+The IV is hardcoded and the encryption mode is CFB.</p>
+<h2 id="dynamic-analysis">Dynamic analysis</h2>
+<p>I used <a href="https://frida.re/">Frida</a> to trace the calls to this method and capture the arguments and return values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ frida-ps -Ua
+</span></span><span style="display:flex;"><span>  PID  Name               Identifier
+</span></span><span style="display:flex;"><span>-----  -----------------  ---------------------------------------
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10610</span>  Contacts           com.google.android.contacts
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">2623</span>  Google             com.google.android.googlequicksearchbox
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">3465</span>  Google Play Store  com.android.vending
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10749</span>  Google Wallet      com.google.android.apps.walletnfcrel
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">8362</span>  Keep Notes         com.google.android.keep
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">5400</span>  MAGic Remote       com.infomir.magicRemote
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10090</span>  Meet               com.google.android.apps.tachyon
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10488</span>  Messages           com.google.android.apps.messaging
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">9754</span>  Photos             com.google.android.apps.photos
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">9538</span>  YouTube            com.google.android.youtube
+</span></span><span style="display:flex;"><span>$ frida-trace -U -j <span style="color:#e6db74">&#39;I5.a!*&#39;</span> <span style="color:#ae81ff">5400</span>
+</span></span><span style="display:flex;"><span>Instrumenting...
+</span></span><span style="display:flex;"><span>a.$init: Loaded handler at <span style="color:#e6db74">&#34;/opt/src/frida/__handlers__/I5.a/_init.js&#34;</span>
+</span></span><span style="display:flex;"><span>a.a: Loaded handler at <span style="color:#e6db74">&#34;/opt/src/frida/__handlers__/I5.a/a.js&#34;</span>
+</span></span><span style="display:flex;"><span>a.b: Loaded handler at <span style="color:#e6db74">&#34;/opt/src/frida/__handlers__/I5.a/b.js&#34;</span>
+</span></span><span style="display:flex;"><span>Started tracing <span style="color:#ae81ff">3</span> functions. Web UI available at http://localhost:38275/
+</span></span><span style="display:flex;"><span>           /* TID 0x1566 */
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">9961</span> ms  a.b<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;259518&#34;</span>, <span style="color:#f92672">[</span>123,34,100,101,118,95,105,100,34,58,34,102,97,101,97,99,57,101,99,52,49,99,50,102,54,53,50,34,125<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">9974</span> ms  &lt;<span style="color:#f92672">=</span> <span style="color:#f92672">[</span>16,13,116,-62,-19,82,-85,91,-21,9,42,31,-107,-71,29,51,-23,84,1,37,96,-23,-30,7,9,50,38,-55,-16<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">9984</span> ms  a.a<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;259518&#34;</span>, <span style="color:#f92672">[</span>16,13,116,-62,-19,82,-85,91,-21,9,42,31,-107,-71,29,51,-23,84,1,37,96,-23,-30,7,9,50,38,-55,-16<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">9986</span> ms  &lt;<span style="color:#f92672">=</span> <span style="color:#f92672">[</span>123,34,100,101,118,95,105,100,34,58,34,102,97,101,97,99,57,101,99,52,49,99,50,102,54,53,50,34,125<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">9989</span> ms  a.b<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;259518&#34;</span>, <span style="color:#f92672">[</span>123,34,100,101,118,95,105,100,34,58,34,102,97,101,97,99,57,101,99,52,49,99,50,102,54,53,50,34,44,34,100,101,118,95,100,101,115,99,114,34,58,34,71,111,111,103,108,101,32,80,105,120,101,108,32,88,76,34,44,34,114,99,95,99,111,100,101,34,58,49,57,48,125<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">9992</span> ms  &lt;<span style="color:#f92672">=</span> <span style="color:#f92672">[</span>16,13,116,-62,-19,82,-85,91,-21,9,42,31,-107,-71,29,51,-23,84,1,37,96,-23,-30,7,9,50,38,-55,-95,52,76,-100,-105,-121,7,94,-32,-84,-111,-51,-60,-15,74,-69,9,-2,8,91,26,-3,59,111,-83,-77,-96,118,19,0,113,-13,-109,68,-5,69,120,-44,-77,-38,-82,-31,103,-102,-114<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>           /* TID 0x1538 */
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">22182</span> ms  a.b<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;259518&#34;</span>, <span style="color:#f92672">[</span>123,34,100,101,118,95,105,100,34,58,34,102,97,101,97,99,57,101,99,52,49,99,50,102,54,53,50,34,125<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">22185</span> ms  &lt;<span style="color:#f92672">=</span> <span style="color:#f92672">[</span>16,13,116,-62,-19,82,-85,91,-21,9,42,31,-107,-71,29,51,-23,84,1,37,96,-23,-30,7,9,50,38,-55,-16<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">22254</span> ms  a.a<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;259518&#34;</span>, <span style="color:#f92672">[</span>16,13,116,-62,-19,82,-85,91,-21,9,42,31,-107,-71,29,51,-23,84,1,37,96,-23,-30,7,9,50,38,-55,-16<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">22256</span> ms  &lt;<span style="color:#f92672">=</span> <span style="color:#f92672">[</span>123,34,100,101,118,95,105,100,34,58,34,102,97,101,97,99,57,101,99,52,49,99,50,102,54,53,50,34,125<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">22259</span> ms  a.b<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;259518&#34;</span>, <span style="color:#f92672">[</span>123,34,100,101,118,95,105,100,34,58,34,102,97,101,97,99,57,101,99,52,49,99,50,102,54,53,50,34,44,34,100,101,118,95,100,101,115,99,114,34,58,34,71,111,111,103,108,101,32,80,105,120,101,108,32,88,76,34,44,34,114,99,95,99,111,100,101,34,58,49,57,49,125<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">22262</span> ms  &lt;<span style="color:#f92672">=</span> <span style="color:#f92672">[</span>16,13,116,-62,-19,82,-85,91,-21,9,42,31,-107,-71,29,51,-23,84,1,37,96,-23,-30,7,9,50,38,-55,-95,52,76,-100,-105,-121,7,94,-32,-84,-111,-51,-60,-15,74,-69,9,-2,8,91,26,-3,59,111,-83,-77,-96,118,19,0,113,-13,-109,68,-5,69,120,-44,-77,-38,-82,-31,103,-101,-114<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>           /* TID 0x300d */
+</span></span></code></pre></div><p>Apparently, they use the pairing code as a first argument to the encryption method and the second argument is a JSON string.
+Having some input and output data, we can easily reconstruct the encryption/decryption method in Python:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">encrypt</span>(pwd, data):
+</span></span><span style="display:flex;"><span>    pwd_bytes <span style="color:#f92672">=</span> pwd<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>    suffix <span style="color:#f92672">=</span> [<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">56</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">102</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">124</span>, <span style="color:#ae81ff">29</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">75</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">45</span>, <span style="color:#ae81ff">74</span>]
+</span></span><span style="display:flex;"><span>    to_hash <span style="color:#f92672">=</span> pwd_bytes <span style="color:#f92672">+</span> to_uint8(suffix)
+</span></span><span style="display:flex;"><span>    h <span style="color:#f92672">=</span> SHA1<span style="color:#f92672">.</span>new()
+</span></span><span style="display:flex;"><span>    h<span style="color:#f92672">.</span>update(to_hash)
+</span></span><span style="display:flex;"><span>    key <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>digest()[:<span style="color:#ae81ff">16</span>]
+</span></span><span style="display:flex;"><span>    iv <span style="color:#f92672">=</span> to_uint8([<span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">111</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">15</span>, <span style="color:#ae81ff">33</span>, <span style="color:#ae81ff">102</span>, <span style="color:#ae81ff">71</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">112</span>, <span style="color:#ae81ff">109</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">64</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">6</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">103</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">76</span>, <span style="color:#ae81ff">99</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">34</span>, <span style="color:#ae81ff">101</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># same as Cipher.getInstance(&#34;AES/CFB8/NoPadding&#34;) in Java</span>
+</span></span><span style="display:flex;"><span>    cipher <span style="color:#f92672">=</span> AES<span style="color:#f92672">.</span>new(key, AES<span style="color:#f92672">.</span>MODE_CFB, iv, segment_size<span style="color:#f92672">=</span><span style="color:#ae81ff">128</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> cipher<span style="color:#f92672">.</span>encrypt(data)
+</span></span></code></pre></div><p>With this we can decrypt all messages from the network dump and see the plain text commands and bodies.</p>
+<h2 id="open-source-client">Open-source client</h2>
+<p>I put together a simple <a href="https://github.com/rgerganov/magic-remote">Python script</a> which implements the entire functionality of the MAGic Remote app.
+With this you have full control over your set-top box and you can integrate it with other home automation systems.</p>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/shanocast/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/shanocast/">Making a Chromecast receiver</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+

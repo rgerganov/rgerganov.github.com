@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="COVID-19 edition">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>How many people are around &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -234,25 +234,25 @@ that counts the number of people around by sniffing WiFi probe requests sent fro
 <p>Well, now we have another method to do the same by exploiting the <a href="https://en.wikipedia.org/wiki/Exposure_Notification">contact tracing</a> functionality which is being
 added to iOS and Android. Cell phones are using Bluetooth Low Energy to transmit ephemeral IDs to nearby
 devices in order to discover encounters with other people. These IDs and the Bluetooth MAC changes every 15-20
-minutes to prevent tracking of users. However, this time is enough to answer the question &ldquo;how many people are around?&quot;.
+minutes to prevent tracking of users. However, this time is enough to answer the question &ldquo;how many people are around?&rdquo;.
 We can also differentiate contact tracing messages from other messages by the service UUID.
 The UUID used by <a href="https://blog.google/documents/70/Exposure_Notification_-_Bluetooth_Specification_v1.2.2.pdf">Google and Apple</a> is <code>0xFD6F</code>.</p>
 <p>Here is my PoC running on Linux which uses <a href="https://www.wireshark.org/docs/man-pages/tshark.html">tshark</a>.
 First we dump BTLE advertisements to a file for a couple of minutes:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo hcitool lescan --duplicates &amp;
-$ tshark -i bluetooth0 -w /tmp/btcap
-<span style="color:#75715e"># leave this for 5-10 min.</span>
-</code></pre></div><p>Then we filter by service UUID and print the MAC address:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tshark -r /tmp/btcap -T fields -e bthci_evt.bd_addr -Y <span style="color:#e6db74">&#34;btcommon.eir_ad.entry.uuid_16 == 0xfd6f&#34;</span>
-5c:32:95:32:93:86
-5c:32:95:32:93:86
-5c:32:95:32:93:86
-5c:32:95:32:93:86
-74:57:03:25:71:b9
-74:57:03:25:71:b9
-74:57:03:25:71:b9
-74:57:03:25:71:b9
-</code></pre></div><p>From this output we can say that we have either one device which changed its MAC address during the scan or two devices around.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo hcitool lescan --duplicates &amp;
+</span></span><span style="display:flex;"><span>$ tshark -i bluetooth0 -w /tmp/btcap
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># leave this for 5-10 min.</span>
+</span></span></code></pre></div><p>Then we filter by service UUID and print the MAC address:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ tshark -r /tmp/btcap -T fields -e bthci_evt.bd_addr -Y <span style="color:#e6db74">&#34;btcommon.eir_ad.entry.uuid_16 == 0xfd6f&#34;</span>
+</span></span><span style="display:flex;"><span>5c:32:95:32:93:86
+</span></span><span style="display:flex;"><span>5c:32:95:32:93:86
+</span></span><span style="display:flex;"><span>5c:32:95:32:93:86
+</span></span><span style="display:flex;"><span>5c:32:95:32:93:86
+</span></span><span style="display:flex;"><span>74:57:03:25:71:b9
+</span></span><span style="display:flex;"><span>74:57:03:25:71:b9
+</span></span><span style="display:flex;"><span>74:57:03:25:71:b9
+</span></span><span style="display:flex;"><span>74:57:03:25:71:b9
+</span></span></code></pre></div><p>From this output we can say that we have either one device which changed its MAC address during the scan or two devices around.</p>
 
 
   

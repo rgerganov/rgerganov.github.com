@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>random hacks</title>
 
@@ -196,7 +196,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -216,6 +216,46 @@
 </div>
 
 <div class="content">
+  
+    <article>
+  <header>
+    <h2><a href="https://xakcop.com/post/magic-remote/">Reversing MAGic Remote</a></h2>
+
+    <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>19 Jan 2025, 13:31</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  </header>
+
+  <p>
+  If you have a MAG set-top box, you may know there is a mobile app called &ldquo;MAGic Remote&rdquo; which turns your phone into a remote controller. It looks like this:
+Allowing remote control over the network is great but there is no public information on the protocol being used. MAGic Remote is also paid and I don&rsquo;t quite understand why people should be giving money for something so simple. That was my motivation to reverse engineer the protocol and create an open-source client.
+  </p>
+
+  
+  <footer>
+    <a href="/post/magic-remote/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
+  </footer>
+  
+</article>
+
   
     <article>
   <header>
@@ -246,7 +286,7 @@
 
   <p>
   I made a Chromecast receiver which works on Linux. It is called Shanocast and it can mirror a Chrome tab or the entire desktop. Here is a demo:
-Your browser does not support the video tag.  The implementation is based on Openscreen which is an open-source implementation of the Chromecast protocol. The tricky part is the receiver authentication. Google Chrome authenticates the receiver and refuses to stream to it if the authentication fails.
+Your browser does not support the video tag. The implementation is based on Openscreen which is an open-source implementation of the Chromecast protocol. The tricky part is the receiver authentication. Google Chrome authenticates the receiver and refuses to stream to it if the authentication fails.
   </p>
 
   
@@ -325,7 +365,6 @@ Your browser does not support the video tag.  The implementation is based on Ope
 
   <p>
   I bought Hyundai Tucson 2020 two years ago and recently I found great series of blog posts on how to hack Hyundai Ioniq 2021 by greenluigi1. Unfortunately, the methods described there didn&rsquo;t work for me. My car is running the previous generation of D-Audio which is quite different from D-Audio 2V described by greenluigi1. For reference, these are the exact versions of the firmware/software which I have:
- 
 I also found the password protected Engineering Mode which appears by tapping 5 times on the left from the Update button and 2 times on the right:
   </p>
 
@@ -366,7 +405,7 @@ I also found the password protected Engineering Mode which appears by tapping 5 
 
   <p>
   I have an old project on Github called rf-car for controlling a radio car with HackRF. A few months ago, my daughter received a new RC car made by Dickie Toys:
- This car was faster than the previous one and it was more fun to play with. I thought it&rsquo;d be great if I can add support for it in the rf-car project and the fun began.
+This car was faster than the previous one and it was more fun to play with. I thought it&rsquo;d be great if I can add support for it in the rf-car project and the fun began.
 FCC docs The car works on 2.
   </p>
 
@@ -407,8 +446,8 @@ FCC docs The car works on 2.
 
   <p>
   Today I have successfully received and decoded an SSTV transmission from ISS. This is the result:
- In this post I will give a quick summary of what I have been using and how it worked for me.
-Hardware:  USRP B200 - this is a high-end SDR but RTL-SDR dongle should also be fine Dipole antenna - I bought this from the RTL-SDR store; each side of the dipole should be around 50cm to make it resonant to 145.
+In this post I will give a quick summary of what I have been using and how it worked for me.
+Hardware: USRP B200 - this is a high-end SDR but RTL-SDR dongle should also be fine Dipole antenna - I bought this from the RTL-SDR store; each side of the dipole should be around 50cm to make it resonant to 145.
   </p>
 
   
@@ -574,46 +613,6 @@ I wanted to have an open-source implementation of RSA SecurID and until now I ha
   
   <footer>
     <a href="/post/cloning-rsa/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://xakcop.com/post/cloud-air-purifier/">Controlling purifiers over the internet</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>30 Nov 2019, 11:04</time>
-  </div>
-
-  
-
-  
-  
-  
-  
-
-  
-  
-  
-  
-
-</div>
-
-  </header>
-
-  <p>
-  Last time I reverse engineered how AirMatters controls air purifiers which are in the same local network. This time we will look into how AirMatters controls devices using the Philips cloud and how secure it is.
-Network analysis The network communication is over SSL, so the first step is to bypass the SSL verification in AirMatters. The application loads its CA certificates from /resources/assets and tries to establish a trust chain to them.
-  </p>
-
-  
-  <footer>
-    <a href="/post/cloud-air-purifier/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
   </footer>
   
 </article>

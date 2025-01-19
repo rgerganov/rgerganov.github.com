@@ -6,10 +6,7 @@
     <description>Recent content in Tags on random hacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>&amp;copy; 2016-2023. All rights reserved.</copyright>
-    
-	<atom:link href="https://xakcop.com/tags/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>&amp;copy; 2016-2025. All rights reserved.</copyright>
+    <atom:link href="https://xakcop.com/tags/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

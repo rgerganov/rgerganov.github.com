@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>Signing files with Solo &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -236,19 +236,19 @@ It shares my believe that security solutions must be open. Solo is not only open
 After all it can generate ECC keys and compute ECDSA signatures, so it should be straightforward. Well, not really.</p>
 <p>First, let&rsquo;s see how keys are generated. I&rsquo;ll use the standard <code>fido2-cred</code> tool to create a new credential.
 We put some arguments (which are not really important here) in the <code>cred_param</code> file and then run <code>fido2-cred</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Create a new credential and save the id and the public key of the credential in &#34;cred&#34;</span>
-$ echo credential challenge | openssl sha256 -binary | base64 &gt; cred_param
-$ echo relying party &gt;&gt; cred_param
-$ echo user name &gt;&gt; cred_param
-$ dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>/dev/urandom bs<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> count<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span> | base64 &gt;&gt; cred_param
-$ fido2-cred -M -i cred_param /dev/hidraw6 | fido2-cred -V -o cred
-$ cat cred
-8BNpSl5onmiOYJNb68ZroWJtJvveCLXyC7l/gVFG0uF/kq6wOISXyMPTdcFX7nIGmKx4eL6HCtjxqpk3L6xdtFtUGgAAAA<span style="color:#f92672">==</span>
------BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2T3KDkdhtOqVODP+4YH5k/yMzeAq
-atKglLqflwzZTdHBvs6S1V9qsTC1l65DJCPZIn8MQYgsVvgwbalcgRp5Cw<span style="color:#f92672">==</span>
------END PUBLIC KEY-----
-</code></pre></div><p>Solo generates a new credential and returns the public key and the credential id (base64 encoded). You can think of the credential id
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Create a new credential and save the id and the public key of the credential in &#34;cred&#34;</span>
+</span></span><span style="display:flex;"><span>$ echo credential challenge | openssl sha256 -binary | base64 &gt; cred_param
+</span></span><span style="display:flex;"><span>$ echo relying party &gt;&gt; cred_param
+</span></span><span style="display:flex;"><span>$ echo user name &gt;&gt; cred_param
+</span></span><span style="display:flex;"><span>$ dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>/dev/urandom bs<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> count<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span> | base64 &gt;&gt; cred_param
+</span></span><span style="display:flex;"><span>$ fido2-cred -M -i cred_param /dev/hidraw6 | fido2-cred -V -o cred
+</span></span><span style="display:flex;"><span>$ cat cred
+</span></span><span style="display:flex;"><span>8BNpSl5onmiOYJNb68ZroWJtJvveCLXyC7l/gVFG0uF/kq6wOISXyMPTdcFX7nIGmKx4eL6HCtjxqpk3L6xdtFtUGgAAAA<span style="color:#f92672">==</span>
+</span></span><span style="display:flex;"><span>-----BEGIN PUBLIC KEY-----
+</span></span><span style="display:flex;"><span>MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2T3KDkdhtOqVODP+4YH5k/yMzeAq
+</span></span><span style="display:flex;"><span>atKglLqflwzZTdHBvs6S1V9qsTC1l65DJCPZIn8MQYgsVvgwbalcgRp5Cw<span style="color:#f92672">==</span>
+</span></span><span style="display:flex;"><span>-----END PUBLIC KEY-----
+</span></span></code></pre></div><p>Solo generates a new credential and returns the public key and the credential id (base64 encoded). You can think of the credential id
 as an opaque handle which Solo derives the private key from. This method is called <a href="https://docs.solokeys.io/solo/fido2-impl/#key-wrapping">key wrapping</a>.</p>
 <p>Let&rsquo;s say that we want to sign the file <code>file.dat</code> with this credential.
 Since Solo uses ECDSA with SHA256, I would expect that executing <code>fido2-assert</code> and specifying <code>SHA256(file.dat)</code> as client data hash will produce the
@@ -265,21 +265,21 @@ The former is a binary blob which contains flags, counter and other stuff.
 It turns out there is no way to sign an arbitrary SHA256 hash using only the operations defined by the standard.
 Of course, this is fine because the purpose of the WebAuthn standard is to define secure web authentication, not file signing.</p>
 <p>Now let&rsquo;s look into another FIDO2 standard &ndash; <a href="https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html">CTAP2</a> &ndash; which describes the communication protocol between the authenticator and the platform. Section 6.1 defines the command values for each of the standard operations but also leaves room for vendor specific commands from <code>authenticatorVendorFirst(0x40)</code> to <code>authenticatorVendorLast(0xBF)</code>. This is great because we can add new commands with vendor specific functionality and assign them numbers from this range. I picked <code>0x50</code> and implemented a <a href="https://github.com/solokeys/solo/pull/397">new command</a> for signing an arbitrary SHA256 hash. The modified <a href="/files/firmware-3.1.3-2-gdd17854.hex">firmware</a> can be flashed to Solo Hacker like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ solo program bootloader firmware-3.1.3-2-gdd17854.hex
-</code></pre></div><p>The last step is <a href="https://github.com/solokeys/solo-python/pull/67">using</a> the new vendor command in <code>solo-python</code> to implement file signing. The syntax is &ldquo;<code>solo key sign-file &lt;cred-id&gt; &lt;filename&gt;</code>&rdquo;. It computes SHA256 hash of the specified file and invokes the vendor command, passing the credential id and the hash as arguments. Here is an example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ solo key sign-file 8BNpSl5onmiOYJNb68ZroWJtJvveCLXyC7l/gVFG0uF/kq6wOISXyMPTdcFX7nIGmKx4eL6HCtjxqpk3L6xdtFtUGgAAAA<span style="color:#f92672">==</span> file.dat
-810743111f7f70cb64b5ef07b4930c2d2b298de743286609905b6f7873738a76  file.dat
-Please press the button on your Solo key
-Saving signature to file.dat.sig
-</code></pre></div><p>The output is a DER encoded signature which is saved to <code>file.dat.sig</code>. We can verify the signature with <code>openssl</code>, using the public key from above:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat public.pem
------BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2T3KDkdhtOqVODP+4YH5k/yMzeAq
-atKglLqflwzZTdHBvs6S1V9qsTC1l65DJCPZIn8MQYgsVvgwbalcgRp5Cw<span style="color:#f92672">==</span>
------END PUBLIC KEY-----
-$ openssl dgst -verify public.pem -sha256 -signature file.dat.sig file.dat
-Verified OK
-</code></pre></div><p>Finally, I will try to list some pros and cons of using this method for signing files.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ solo program bootloader firmware-3.1.3-2-gdd17854.hex
+</span></span></code></pre></div><p>The last step is <a href="https://github.com/solokeys/solo-python/pull/67">using</a> the new vendor command in <code>solo-python</code> to implement file signing. The syntax is &ldquo;<code>solo key sign-file &lt;cred-id&gt; &lt;filename&gt;</code>&rdquo;. It computes SHA256 hash of the specified file and invokes the vendor command, passing the credential id and the hash as arguments. Here is an example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ solo key sign-file 8BNpSl5onmiOYJNb68ZroWJtJvveCLXyC7l/gVFG0uF/kq6wOISXyMPTdcFX7nIGmKx4eL6HCtjxqpk3L6xdtFtUGgAAAA<span style="color:#f92672">==</span> file.dat
+</span></span><span style="display:flex;"><span>810743111f7f70cb64b5ef07b4930c2d2b298de743286609905b6f7873738a76  file.dat
+</span></span><span style="display:flex;"><span>Please press the button on your Solo key
+</span></span><span style="display:flex;"><span>Saving signature to file.dat.sig
+</span></span></code></pre></div><p>The output is a DER encoded signature which is saved to <code>file.dat.sig</code>. We can verify the signature with <code>openssl</code>, using the public key from above:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cat public.pem
+</span></span><span style="display:flex;"><span>-----BEGIN PUBLIC KEY-----
+</span></span><span style="display:flex;"><span>MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2T3KDkdhtOqVODP+4YH5k/yMzeAq
+</span></span><span style="display:flex;"><span>atKglLqflwzZTdHBvs6S1V9qsTC1l65DJCPZIn8MQYgsVvgwbalcgRp5Cw<span style="color:#f92672">==</span>
+</span></span><span style="display:flex;"><span>-----END PUBLIC KEY-----
+</span></span><span style="display:flex;"><span>$ openssl dgst -verify public.pem -sha256 -signature file.dat.sig file.dat
+</span></span><span style="display:flex;"><span>Verified OK
+</span></span></code></pre></div><p>Finally, I will try to list some pros and cons of using this method for signing files.</p>
 <ul>
 <li>Pros: I believe this is simpler alternative to let&rsquo;s say PGP. You also get the same protection from malware as with standard FIDO2 operations thanks to user presence test and PIN authentication.</li>
 <li>Cons: One big disadvantage is that there is no way to backup your keys. You cannot import existing keys to the authenticator and there is no way to export keys from the authenticator.</li>

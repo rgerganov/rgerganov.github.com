@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Standard-class Gen5 navigation">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>Hyundai Head Unit Hacking &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -306,7 +306,7 @@ Tracing the message <code>&quot;[DEBUG] U-Boot Recovery Button pushed .... \n&qu
 
 </a></p>
 <p>Using these addresses, we can &ldquo;extract&rdquo; the u-boot code from <code>lk.rom</code> with the following command:</p>
-<pre><code>$ dd if=lk.rom skip=$((0x1055c)) count=$((0x57894-0x1055c)) bs=1 of=uboot.rom
+<pre tabindex="0"><code>$ dd if=lk.rom skip=$((0x1055c)) count=$((0x57894-0x1055c)) bs=1 of=uboot.rom
 </code></pre><p>And then analyze <code>uboot.rom</code> as a separate binary with start address <code>0x80000000</code> in Ghidra.</p>
 <h2 id="reversing-ubootrom-part-of-lkrom">Reversing <code>uboot.rom</code> (part of <code>lk.rom</code>)</h2>
 <p>There are again many debug strings which help a lot to understand what&rsquo;s going on.
@@ -328,7 +328,7 @@ These files (with the exception of <code>encrypt_partition.dat</code>) correspon
 </div>
 
 </a></p>
-<p>They must be encrypted with AES-128-CBC using key=&rdquo;)1Zorxo^fAhGlh$#&rdquo; and IV=&quot;aoAkfwk+#1.6G{dE&rdquo;.
+<p>They must be encrypted with AES-128-CBC using key=&quot;)1Zorxo^fAhGlh$#&quot; and IV=&ldquo;aoAkfwk+#1.6G{dE&rdquo;.
 Only <code>system.ext4</code> must be converted to sparse image before the encryption.</p>
 <h2 id="patching-systemext4">Patching system.ext4</h2>
 <p>Assuming that we can flash whatever we want with the recovery mechanism, what would be the minimal patch for the official firmware
@@ -344,11 +344,11 @@ a hidden menu in the Engineering Mode which enables ADB:</p>
 <p>The boolean flag <code>mDispAdb</code> can be switched by tapping 5 times in the bottom right corner of the 3rd page of &ldquo;Module Info&rdquo;.
 However, if <code>ADB_HIDE_FEATURE</code> is present this flag is ignored and visibility is always set to 8 which means <a href="https://developer.android.com/reference/android/view/View#GONE">GONE</a>.
 The <code>ADB_HIDE</code> feature is set by default as we can see in <code>system.ext4</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">$ cat /tmp/car/etc/permissions/com.hkmc.software.engineermode.adb_hide.xml 
-<span style="color:#f92672">&lt;permissions&gt;</span>
-    <span style="color:#f92672">&lt;feature</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;com.hkmc.software.engineermode.adb_hide&#34;</span> <span style="color:#f92672">/&gt;</span>
-<span style="color:#f92672">&lt;/permissions&gt;</span>
-</code></pre></div><p>Well, let&rsquo;s delete this feature, create a recovery package and push it to the car. Long story short, that worked!
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span>$ cat /tmp/car/etc/permissions/com.hkmc.software.engineermode.adb_hide.xml 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;permissions&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;feature</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;com.hkmc.software.engineermode.adb_hide&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/permissions&gt;</span>
+</span></span></code></pre></div><p>Well, let&rsquo;s delete this feature, create a recovery package and push it to the car. Long story short, that worked!
 With this simple change we have successfully enabled ADB on Kia Stinger 2020 and connected to it over USB!</p>
 <p><a href="/images/adb_menu.jpg">
 
@@ -359,13 +359,13 @@ With this simple change we have successfully enabled ADB on Kia Stinger 2020 and
 </a></p>
 <h2 id="getting-root-shell">Getting root shell</h2>
 <p>Now when we have an ADB shell how to become root? Turns out there is a convenient setuid binary called &ldquo;amossu&rdquo; in the stock firmware:</p>
-<pre><code>$ ls -la bin/amossu
+<pre tabindex="0"><code>$ ls -la bin/amossu
 -rwsr-sr-x 1 root root 37216 Oct  6 08:29 bin/amossu
 </code></pre><p>It simply does:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">setgid(<span style="color:#ae81ff">0</span>);
-setuid(<span style="color:#ae81ff">0</span>);
-execv(<span style="color:#e6db74">&#34;/system/bin/sh&#34;</span>,__argv);
-</code></pre></div><h2 id="tooling">Tooling</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">setgid</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">setuid</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">execv</span>(<span style="color:#e6db74">&#34;/system/bin/sh&#34;</span>,__argv);
+</span></span></code></pre></div><h2 id="tooling">Tooling</h2>
 <p>I have released a small tool and instructions how to create custom firmware for cars with Gen5 navigation.
 You can find it <a href="https://github.com/rgerganov/gen5fw">here</a>.
 So far we have successfully verified the entire process on Kia Stringer 2020 (thanks to Ali Al-Rawi).</p>

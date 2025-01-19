@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>Debugging the Linux kernel with VMware &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -246,7 +246,7 @@ Let&rsquo;s see how we can debug this further.</p>
 <h2 id="vm-config">VM config</h2>
 <p>VMware Workstation has a nice feature which allows to debug the Linux kernel running inside the VM with <code>gdb</code> on the host.
 This is enabled by adding a single line to the VM&rsquo;s configuration file:</p>
-<pre><code>debugStub.listen.guest64 = &quot;TRUE&quot;
+<pre tabindex="0"><code>debugStub.listen.guest64 = &#34;TRUE&#34;
 </code></pre><p>Now when the VM is started, port 8864 is opened on the host and we can connect to it with <code>gdb</code> for remote debugging.</p>
 <h2 id="preparing-the-guest-os">Preparing the guest OS</h2>
 <p>First, we want to disable <a href="https://en.wikipedia.org/wiki/Address_space_layout_randomization">KASLR</a>
@@ -257,23 +257,23 @@ Then update GRUB:</p>
 <p>and reboot the VM.</p>
 <p>Next, we want to obtain debug symbols for the running kernel and its modules.
 For Ubuntu there is a dedicated <a href="https://wiki.ubuntu.com/Debug%20Symbol%20Packages#Getting_-dbgsym.ddeb_packages">repository</a>:</p>
-<pre><code>echo &quot;deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse
+<pre tabindex="0"><code>echo &#34;deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse
 deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse
-deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse&quot; | \
+deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse&#34; | \
 sudo tee -a /etc/apt/sources.list.d/ddebs.list
 sudo apt install ubuntu-dbgsym-keyring
 sudo apt-get update
 </code></pre><p>Install kernel with debug symbols:</p>
-<pre><code>sudo apt-get install linux-image-`uname -r`-dbgsym
+<pre tabindex="0"><code>sudo apt-get install linux-image-`uname -r`-dbgsym
 </code></pre><p>Copy the following files to the host OS as we need to load them into <code>gdb</code>:</p>
-<pre><code>/usr/lib/debug/boot/vmlinux-4.15.0-45-generic
+<pre tabindex="0"><code>/usr/lib/debug/boot/vmlinux-4.15.0-45-generic
 /usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/udc/udc-core.ko
 /usr/lib/debug/lib/modules/4.15.0-45-generic/kernel/drivers/usb/gadget/function/usb_f_hid.ko
 dummy_hcd.ko
 </code></pre><p><em>Note</em>: <code>dummy_hcd</code> is missing in Ubuntu (see this <a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1073089">bug</a>), I built it by myself.</p>
 <h2 id="using-gdb">Using GDB</h2>
 <p>Now that we have the debug symbols, we are ready to fire off <code>gdb</code> in the host OS:</p>
-<pre><code>$ gdb vmlinux-4.15.0-45-generic
+<pre tabindex="0"><code>$ gdb vmlinux-4.15.0-45-generic
 
 (gdb) set architecture i386:x86-64
 (gdb) target remote localhost:8864
@@ -290,17 +290,17 @@ dummy_hcd.ko
 <p>We also need to load the symbols for the kernel modules that we want to debug.
 However, modules can be dynamically loaded at any address and we need to feed this information into <code>gdb</code>.
 Let&rsquo;s take for example <code>usb_f_hid</code>. We can get the corresponding addresses in the guest OS like this:</p>
-<pre><code>$ cd /sys/module/usb_f_hid/sections
+<pre tabindex="0"><code>$ cd /sys/module/usb_f_hid/sections
 $ sudo cat .text .data .bss 
 0xffffffffc06d7000
 0xffffffffc06da000
 0xffffffffc06da740
 </code></pre><p>Now we can add the symbol file in <code>gdb</code> using the addresses from above:</p>
-<pre><code>(gdb) add-symbol-file usb_f_hid.ko 0xffffffffc06d7000 -s .data 0xffffffffc06da000 -s .bss 0xffffffffc06da740
+<pre tabindex="0"><code>(gdb) add-symbol-file usb_f_hid.ko 0xffffffffc06d7000 -s .data 0xffffffffc06da000 -s .bss 0xffffffffc06da740
 </code></pre><p>We do the same for <code>udc-core</code> and <code>dummy_hcd</code>.
 Now that we have all symbols loaded, we can trigger the bug in the guest OS and then hit Ctrl+C in <code>gdb</code> to
 inspect the backtrace:</p>
-<pre><code>^C
+<pre tabindex="0"><code>^C
 Program received signal SIGINT, Interrupt.
 0xffffffff810de405 in rep_nop () at /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h:647
 647 /build/linux-uQJ2um/linux-4.15.0/arch/x86/include/asm/processor.h: No such file or directory.
@@ -321,7 +321,7 @@ Program received signal SIGINT, Interrupt.
 #13 0xffffffffc06a2b96 in usb_ep_queue ()
 #14 0xffffffffc06d7eb6 in f_hidg_write (file=&lt;optimized out&gt;, buffer=&lt;optimized out&gt;, count=5, offp=&lt;optimized out&gt;) at /build/linux-uQJ2um/linux-4.15.0/drivers/usb/gadget/function/f_hid.c:394
 #15 0xffffffff8127730b in __vfs_write (file=&lt;optimized out&gt;, p=&lt;optimized out&gt;, count=&lt;optimized out&gt;, pos=&lt;optimized out&gt;) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:481
-#16 0xffffffff812774d1 in vfs_write (file=0xffff880077b77c00, buf=0x55841858c7c0 &quot;fira\n&quot;, count=&lt;optimized out&gt;, pos=0xffffc90000bbbef8) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:569
+#16 0xffffffff812774d1 in vfs_write (file=0xffff880077b77c00, buf=0x55841858c7c0 &#34;fira\n&#34;, count=&lt;optimized out&gt;, pos=0xffffc90000bbbef8) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:569
 #17 0xffffffff81277725 in SYSC_write (count=&lt;optimized out&gt;, buf=&lt;optimized out&gt;, fd=&lt;optimized out&gt;) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:615
 #18 SyS_write (fd=&lt;optimized out&gt;, buf=94025832515520, count=5) at /build/linux-uQJ2um/linux-4.15.0/fs/read_write.c:607
 #19 0xffffffff81003ae3 in do_syscall_64 ()

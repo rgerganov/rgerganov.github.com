@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>Rooting HS6020 IPTV STB &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -244,8 +244,8 @@ USB-to-serial converter:</p>
 </div>
 
 </a></p>
-<pre><code>screen /dev/ttyACM1 115200
-</code></pre><pre><code>Common Firmware Environment (CFE) version 1.1 for BCM97401C1, (Little Endian Mode)
+<pre tabindex="0"><code>screen /dev/ttyACM1 115200
+</code></pre><pre tabindex="0"><code>Common Firmware Environment (CFE) version 1.1 for BCM97401C1, (Little Endian Mode)
 Build Date: Wed Jan 23 13:31:55     2008 (fangyu@hansunte-d6fcaf)
 Copyright (C) 2000-2007 Broadcom Corporation.
 
@@ -262,13 +262,13 @@ Total memory: 0x8000000 bytes (128MB)
 </code></pre><p>The device boots and we get a nice login prompt.
 It&rsquo;s a Broadcom SoC and uses something called Common Firmware Environment (CFE) to boot the linux kernel.
 After a few google searches, I found that CFE can be interrupted with Ctrl+C which gives us something like a bootloader shell:</p>
-<pre><code>Automatic startup canceled via Ctrl-C
+<pre tabindex="0"><code>Automatic startup canceled via Ctrl-C
 CFE&gt; printenv
 Variable Name        Value
 -------------------- --------------------------------------------------
         BOOT_CONSOLE uart0
          ETH0_HWADDR 00:18:95:10:10:6B
-             STARTUP boot -z -elf flash0.kernel0: 'root=/dev/mtdblock0 rootfstype=jffs2 mem=64m '
+             STARTUP boot -z -elf flash0.kernel0: &#39;root=/dev/mtdblock0 rootfstype=jffs2 mem=64m &#39;
          CFE_VERSION 1.1.0
        CFE_BOARDNAME BCM97401C1
       CFE_MEMORYSIZE 128
@@ -276,48 +276,48 @@ Variable Name        Value
 </code></pre><p>The printenv command reveals the <code>STARTUP</code> variable which shows the exact boot command.
 The last parameter of the boot command looks like a kernel cmdline.
 Let&rsquo;s try and run the shell instead of the init process:</p>
-<pre><code>CFE&gt; boot -z -elf flash0.kernel0: 'root=/dev/mtdblock0 rootfstype=jffs2 mem=64m init=/bin/sh'
+<pre tabindex="0"><code>CFE&gt; boot -z -elf flash0.kernel0: &#39;root=/dev/mtdblock0 rootfstype=jffs2 mem=64m init=/bin/sh&#39;
 </code></pre><p>The device boots and we have a root shell :)</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># cat /etc/shadow</span>
-root:BGOfOe8QJYuyA:0:0:root:/root:/bin/sh
-bin:*:1:1:bin:/bin:/dev/null
-daemon:*:2:2:daemon:/sbin:/dev/null
-adm:*:3:4:adm:/var/tmp:/dev/null
-ftp:*:14:50:FTP User:/var/tmp:/dev/null
-nobody:*:99:99:Nobody:/:/dev/null
-rpcuser:x:29:29:RPC Service User:/var/tmp:/dev/null
-nfsnobody:x:65534:65534:Anonymous NFS User:/var/tmp:/dev/null
-</code></pre></div><p>The hash for the root password is <code>BGOfOe8QJYuyA</code> which is a DES hash.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># cat /etc/shadow</span>
+</span></span><span style="display:flex;"><span>root:BGOfOe8QJYuyA:0:0:root:/root:/bin/sh
+</span></span><span style="display:flex;"><span>bin:*:1:1:bin:/bin:/dev/null
+</span></span><span style="display:flex;"><span>daemon:*:2:2:daemon:/sbin:/dev/null
+</span></span><span style="display:flex;"><span>adm:*:3:4:adm:/var/tmp:/dev/null
+</span></span><span style="display:flex;"><span>ftp:*:14:50:FTP User:/var/tmp:/dev/null
+</span></span><span style="display:flex;"><span>nobody:*:99:99:Nobody:/:/dev/null
+</span></span><span style="display:flex;"><span>rpcuser:x:29:29:RPC Service User:/var/tmp:/dev/null
+</span></span><span style="display:flex;"><span>nfsnobody:x:65534:65534:Anonymous NFS User:/var/tmp:/dev/null
+</span></span></code></pre></div><p>The hash for the root password is <code>BGOfOe8QJYuyA</code> which is a DES hash.
 I tried a quick dictionary attack on this hash without success.
 This doesn&rsquo;t matter because the file system is writable and we can replace the hash with whatever we want.
 After changing the hash and rebooting, we can login on telnet:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">telnet 10.10.20.244 
-Trying 10.10.20.244...
-Connected to 10.10.20.244.
-Escape character is <span style="color:#e6db74">&#39;^]&#39;</span>.
-<span style="color:#f92672">(</span>none<span style="color:#f92672">)</span> login: root
-Password: 
-<span style="color:#75715e"># whoami</span>
-root
-<span style="color:#75715e"># cat /proc/cpuinfo</span>
-system type             : BCM97xxx Settop Platform
-processor               : <span style="color:#ae81ff">0</span>
-cpu model               : Brcm7401 V0.0
-cpu MHz                 : 295.93
-BogoMIPS                : 295.93    <span style="color:#f92672">(</span> udelay_val : <span style="color:#ae81ff">147968</span>  HZ <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span> <span style="color:#f92672">)</span>
-wait instruction        : yes
-microsecond timers      : yes
-tlb_entries             : <span style="color:#ae81ff">32</span>
-extra interrupt vector  : yes
-hardware watchpoint     : no
-ASEs implemented        :
-VCED exceptions         : not available
-VCEI exceptions         : not available
-RAC setting             : I/D-RAC enabled
-unaligned access        : <span style="color:#ae81ff">6</span>
-<span style="color:#75715e"># uname -a</span>
-Linux <span style="color:#f92672">(</span>none<span style="color:#f92672">)</span> 2.6.12-5.0-brcmstb <span style="color:#75715e">#45 Sat Dec 6 21:52:44 EST 2008 7401c0 unknown</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>telnet 10.10.20.244 
+</span></span><span style="display:flex;"><span>Trying 10.10.20.244...
+</span></span><span style="display:flex;"><span>Connected to 10.10.20.244.
+</span></span><span style="display:flex;"><span>Escape character is <span style="color:#e6db74">&#39;^]&#39;</span>.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>none<span style="color:#f92672">)</span> login: root
+</span></span><span style="display:flex;"><span>Password: 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># whoami</span>
+</span></span><span style="display:flex;"><span>root
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># cat /proc/cpuinfo</span>
+</span></span><span style="display:flex;"><span>system type             : BCM97xxx Settop Platform
+</span></span><span style="display:flex;"><span>processor               : <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>cpu model               : Brcm7401 V0.0
+</span></span><span style="display:flex;"><span>cpu MHz                 : 295.93
+</span></span><span style="display:flex;"><span>BogoMIPS                : 295.93    <span style="color:#f92672">(</span> udelay_val : <span style="color:#ae81ff">147968</span>  HZ <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span> <span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>wait instruction        : yes
+</span></span><span style="display:flex;"><span>microsecond timers      : yes
+</span></span><span style="display:flex;"><span>tlb_entries             : <span style="color:#ae81ff">32</span>
+</span></span><span style="display:flex;"><span>extra interrupt vector  : yes
+</span></span><span style="display:flex;"><span>hardware watchpoint     : no
+</span></span><span style="display:flex;"><span>ASEs implemented        :
+</span></span><span style="display:flex;"><span>VCED exceptions         : not available
+</span></span><span style="display:flex;"><span>VCEI exceptions         : not available
+</span></span><span style="display:flex;"><span>RAC setting             : I/D-RAC enabled
+</span></span><span style="display:flex;"><span>unaligned access        : <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># uname -a</span>
+</span></span><span style="display:flex;"><span>Linux <span style="color:#f92672">(</span>none<span style="color:#f92672">)</span> 2.6.12-5.0-brcmstb <span style="color:#75715e">#45 Sat Dec 6 21:52:44 EST 2008 7401c0 unknown</span>
+</span></span></code></pre></div>
 
   
 <div class="prev-next-post pure-g">

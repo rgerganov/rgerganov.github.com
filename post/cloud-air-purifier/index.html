@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
-  <meta name="generator" content="Hugo 0.68.3" />
+  <meta name="generator" content="Hugo 0.123.7">
 
   <title>Controlling purifiers over the internet &middot; random hacks</title>
 
@@ -188,7 +188,7 @@
 
   <div>
   <div class="small-print">
-    <small>&copy; 2016-2023. All rights reserved.</small>
+    <small>&copy; 2016-2025. All rights reserved.</small>
   </div>
   <div class="small-print">
     <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
@@ -244,7 +244,7 @@ My favourite tool for sniffing SSL traffic is <code>mitmproxy</code>, so I simpl
 </ol>
 <p>The problem with this pairing mechanism is that it is completely silent and doesn&rsquo;t require any physical interaction with the device. This means that an attacker needs one time network access to your device to pwn it forever. As far as I can tell, there is no way to &ldquo;unpair&rdquo; a device or to see how many accounts your device is paired with.</p>
 <p>The only missing piece in the above is how the <code>Authorization</code> HTTP header is calculated. This is how it looks like:</p>
-<pre><code>Authorization: CBAuth Type=&quot;SSO&quot;, Client=&quot;000000fff10af31f&quot;, RequestNr=&quot;2&quot;, Nonce=&quot;kj3PUx56Cpo3UdcIiICoPQ==&quot;, SSOToken=&quot;kcK0TgzC..&quot;, Authentication=&quot;XAR9WB443KTDT0A7pNUQZA==&quot;
+<pre tabindex="0"><code>Authorization: CBAuth Type=&#34;SSO&#34;, Client=&#34;000000fff10af31f&#34;, RequestNr=&#34;2&#34;, Nonce=&#34;kj3PUx56Cpo3UdcIiICoPQ==&#34;, SSOToken=&#34;kcK0TgzC..&#34;, Authentication=&#34;XAR9WB443KTDT0A7pNUQZA==&#34;
 </code></pre><p>We get <code>SSOToken</code> and <code>Nonce</code> from the response of the login request. The <code>Authentication</code> is 16 bytes base64 encoded value which is a calculated in <code>libICPClient.so</code>.</p>
 <h2 id="reversing-libicpclientso">Reversing <code>libICPClient.so</code></h2>
 <p>I used <a href="https://ghidra-sre.org/">Ghidra</a> to reverse engineer this native library and find how the authentication bytes are computed.
@@ -265,16 +265,16 @@ This is how the relevant function looks like after being decompiled:</p>
 
 
 <p>And this is how I implemented it in Python:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">m <span style="color:#f92672">=</span> hashlib<span style="color:#f92672">.</span>sha1()
-m<span style="color:#f92672">.</span>update(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x05</span><span style="color:#e6db74">&#39;</span>)
-m<span style="color:#f92672">.</span>update(client_id<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;ascii&#39;</span>))
-m<span style="color:#f92672">.</span>update(host<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;ascii&#39;</span>))
-m<span style="color:#f92672">.</span>update(base64<span style="color:#f92672">.</span>b64decode(sso_key))
-m<span style="color:#f92672">.</span>update(struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#39;&lt;I&#39;</span>, request_num))
-m<span style="color:#f92672">.</span>update(base64<span style="color:#f92672">.</span>b64decode(nonce))
-key <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>digest()[:<span style="color:#ae81ff">16</span>]
-auth <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(key)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;ascii&#39;</span>)
-</code></pre></div><h2 id="open-source-client">Open source client</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>m <span style="color:#f92672">=</span> hashlib<span style="color:#f92672">.</span>sha1()
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>update(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x05</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>update(client_id<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;ascii&#39;</span>))
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>update(host<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;ascii&#39;</span>))
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>update(base64<span style="color:#f92672">.</span>b64decode(sso_key))
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>update(struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#39;&lt;I&#39;</span>, request_num))
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>update(base64<span style="color:#f92672">.</span>b64decode(nonce))
+</span></span><span style="display:flex;"><span>key <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>digest()[:<span style="color:#ae81ff">16</span>]
+</span></span><span style="display:flex;"><span>auth <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(key)<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;ascii&#39;</span>)
+</span></span></code></pre></div><h2 id="open-source-client">Open source client</h2>
 <p>With this I put together <code>cloudctrl</code> which can be used together with <code>airctrl</code> to provision accounts, pair and control purifiers over the internet.
 Check out the <a href="https://github.com/rgerganov/py-air-control/blob/master/README.md">README</a> of my project for more information.</p>
 <h2 id="disclosure">Disclosure</h2>
