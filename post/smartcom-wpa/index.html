@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The story behind CVE-2025-22936">
+  <meta name="generator" content="Hugo 0.123.7">
+
+  <title>Default Wi-Fi passwords &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://youtube.com/user/xakc0p" rel="me" target="_blank"><i class="fa fa-youtube-square fa-fw"></i>YouTube</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2025. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Default Wi-Fi passwords</h1>
+  <h2>The story behind CVE-2025-22936</h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>08 Feb 2025, 17:02</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  <p>Back in 2022 I was speaking at <a href="https://securitybsides.bg/">BSides Sofia</a> about hacking set-top boxes and decrypting IPTV streams.
+After the talk I met <a href="https://sec.stanev.org/">Alex Stanev</a> who told me about the <a href="https://wpa-sec.stanev.org/">wpa-sec</a> project he was running.
+The project is about collecting WPA handshakes and cracking them in distributed manner.
+I got interested and Alex was kind enough to share a lot of his research with me.
+It turns out that a lot of routers are using some crappy algorithms for generating pseudo-random default Wi-Fi passwords.
+These algorithms usually take device-bound constants like serial number, MAC address, SSID, etc for input.
+Most of the time the generated password looks &ldquo;random&rdquo; and &ldquo;secure&rdquo; and people don&rsquo;t bother changing it.
+It is printed along with the default SSID on a sticker on the back of the router.</p>
+<p>Finding such algorithms is a lot of fun and I immediately started looking for routers with seemingly random default Wi-Fi passwords.
+One of the first candidates was the <a href="https://help.a1.bg/internet/fixed-internet/wireless-routers/smartcom-ralink/about-the-device">Smartcom Ralink</a>
+router which was being deployed by two of the largest telecoms in Bulgaria - <a href="https://www.a1.bg/">A1</a> and <a href="https://www.vivacom.bg/">Vivacom</a>.
+They were giving it to their customers for free and according to Smartcom&rsquo;s <a href="https://smartcom.bg/customer-success/csp-xcpe">press release</a> they have deployed over <strong>200,000</strong> units.</p>
+<p>This is an example sticker from Smartcom router deployed by A1 with default password <code>6dc0b69c</code>:
+<a href="/images/a1-smartcom.jpg" title="A1 Smartcom router">
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/a1-smartcom-small.jpg" >
+</div>
+
+</a></p>
+<p>And this is an example sticker from Smartcom router deployed by Vivacom with default password <code>fb7958c1</code>:
+<a href="/images/vivacom-smartcom.jpg" title="Vivacom Smartcom router">
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/vivacom-smartcom-small.jpg" >
+</div>
+
+</a></p>
+<p>In both cases the default password is a hex string of length 8 and most probably it is generated by the same algorithm.
+I opened the router and immediately found a UART header on the PCB.
+Then I connected my USB-to-serial adapter (old Arduino) to it and I got a nice root shell:</p>
+<p><a href="/images/smartcom-uart.jpg" title="Serial console">
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/smartcom-uart-small.jpg" >
+</div>
+
+</a></p>
+<p>After dumping the root filesystem I found what I was looking for in the <code>/bin/ralink_init</code> binary.
+There is a <code>show_wifi_pass()</code> function which <a href="https://ghidra-sre.org/">Ghidra</a> decompiled to this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">show_wifi_pass</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>param_1) {
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>local_80 <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SmartcomWifi&#34;</span>;
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (param_1 <span style="color:#f92672">==</span> (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">flash_read_serial</span>(<span style="color:#f92672">&amp;</span>local_e0);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">strncpy</span>((<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>local_e0,param_1,<span style="color:#ae81ff">0x1f</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  uVar3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span>( true ) {
+</span></span><span style="display:flex;"><span>    sVar1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">strlen</span>((<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>local_e0);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (sVar1 <span style="color:#f92672">&lt;=</span> uVar3) <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    iVar4 <span style="color:#f92672">=</span> <span style="color:#a6e22e">tolower</span>((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">*</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">&amp;</span>local_e0 <span style="color:#f92672">+</span> uVar3));
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)((<span style="color:#66d9ef">int</span>)<span style="color:#f92672">&amp;</span>local_e0 <span style="color:#f92672">+</span> uVar3) <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span>)iVar4;
+</span></span><span style="display:flex;"><span>    uVar3 <span style="color:#f92672">=</span> uVar3 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">snprintf</span>(acStack_c0,<span style="color:#ae81ff">0x3f</span>,<span style="color:#e6db74">&#34;%s%s&#34;</span>,<span style="color:#f92672">&amp;</span>local_e0,local_80);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">MD5Init</span>(auStack_70);
+</span></span><span style="display:flex;"><span>  sVar1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">strlen</span>(acStack_c0);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">MD5Update</span>(auStack_70,acStack_c0,sVar1);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">MD5Final</span>(local_f0,auStack_70);
+</span></span><span style="display:flex;"><span>  iVar4 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  pbVar2 <span style="color:#f92672">=</span> local_f0;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>    iVar4 <span style="color:#f92672">=</span> iVar4 <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%02x&#34;</span>,(uint)<span style="color:#f92672">*</span>pbVar2);
+</span></span><span style="display:flex;"><span>    pbVar2 <span style="color:#f92672">=</span> local_f0 <span style="color:#f92672">+</span> iVar4;
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">while</span> (iVar4 <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>They take the serial number and append the string <code>SmartcomWifi</code> to it.
+Then they calculate the MD5 hash of the resulting string and take the first 4 bytes of it.
+Here is a simplified version of the algorithm in pseudo code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>function <span style="color:#a6e22e">show_wifi_pass</span>(serial) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (serial <span style="color:#f92672">==</span> NULL) serial <span style="color:#f92672">=</span> <span style="color:#a6e22e">flash_read_serial</span>()
+</span></span><span style="display:flex;"><span>  serial <span style="color:#f92672">=</span> <span style="color:#a6e22e">tolower</span>(serial)
+</span></span><span style="display:flex;"><span>  pwd <span style="color:#f92672">=</span> serial <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;SmartcomWifi&#34;</span>
+</span></span><span style="display:flex;"><span>  pwd_md5 <span style="color:#f92672">=</span> <span style="color:#a6e22e">md5</span>(pwd)
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">print</span>(pwd_md5[<span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">8</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>A quick test with the serial numbers from the stickers confirms that this is the algorithm used to generate the default Wi-Fi password:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ echo -n <span style="color:#e6db74">&#39;dea15fb8SmartcomWifi&#39;</span> | md5sum | cut -c -8
+</span></span><span style="display:flex;"><span>6dc0b69c
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ echo -n <span style="color:#e6db74">&#39;de7ddbb8SmartcomWifi&#39;</span> | md5sum | cut -c -8
+</span></span><span style="display:flex;"><span>fb7958c1
+</span></span></code></pre></div><p>The serial number is the last 4 octets of the MAC address of the router with some offset.</p>
+<p>We have reported the vulnerability to Smartcom, A1 and Vivacom and we have received <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-22936">CVE-2025-22936</a>.
+This is the timeline of the disclosure:</p>
+<ul>
+<li>2 Jan 2025: Vulnerability reported to Smartcom, A1, Vivacom</li>
+<li>2 Jan 2025: Vivacom acknowledges the vulnerability</li>
+<li>6 Jan 2025: Smartcom states the products in question are EoL/EoD, there will be no fix</li>
+<li>9 Jan 2025: 2nd reminder to A1 sent, no response</li>
+<li>5 Feb 2025: Public disclosure</li>
+</ul>
+<p>Based on information, collected in <a href="https://wpa-sec.stanev.org/">wpa-sec</a>, at least 69% of A1 and 54% of Vivacom clients are using AP default ESSID and password. If you are one of them, change your Wi-Fi password immediately.</p>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/magic-remote/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/magic-remote/">Reversing MAGic Remote</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+
