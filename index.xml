@@ -7,8 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2016-2025. All rights reserved.</copyright>
-    <lastBuildDate>Sat, 08 Feb 2025 17:02:55 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 09 Apr 2025 15:16:38 +0300</lastBuildDate>
     <atom:link href="https://xakcop.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reversing TP-Link EX220 from A1</title>
+      <link>https://xakcop.com/post/ex220/</link>
+      <pubDate>Wed, 09 Apr 2025 15:16:38 +0300</pubDate>
+      <guid>https://xakcop.com/post/ex220/</guid>
+      <description>Large telecoms in Bulgaria are also ISPs and there is a common practice to give out &amp;ldquo;free&amp;rdquo; Wi-Fi routers to customers. Last time I wrote about the Smartcom Ralink router and its insecure default Wi-Fi passwords. This time I will look into the TP-Link EX220 router which is being deployed by A1.&#xA;My main motivation for this research was their ridiculous policy of forcing customers to use this router and not allowing them to use their own.</description>
+    </item>
     <item>
       <title>Default Wi-Fi passwords</title>
       <link>https://xakcop.com/post/smartcom-wpa/</link>

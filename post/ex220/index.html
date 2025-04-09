@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.123.7">
+
+  <title>Reversing TP-Link EX220 from A1 &middot; random hacks</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://xakcop.com//favicon.ico" type="image/x-icon" />
+
+
+  
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://twitter.com/rgerganov" rel="me" target="_blank"><i class="fa fa-twitter-square fa-fw"></i>Twitter</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://youtube.com/user/xakc0p" rel="me" target="_blank"><i class="fa fa-youtube-square fa-fw"></i>YouTube</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/rgerganov" rel="me" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/rgerganov" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2016-2025. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Reversing TP-Link EX220 from A1</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>09 Apr 2025, 15:16</time>
+  </div>
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+</div>
+
+  <p>Large telecoms in Bulgaria are also ISPs and there is a common practice to give out &ldquo;free&rdquo; Wi-Fi routers to customers.
+<a href="/post/smartcom-wpa">Last time</a> I wrote about the Smartcom Ralink router and its insecure default Wi-Fi passwords.
+This time I will look into the <a href="https://help.a1.bg/internet/fixed-internet/wireless-routers/tp-link-ex220/initial-setup">TP-Link EX220 router</a> which is being deployed by <a href="https://www.a1.bg/">A1</a>.</p>
+
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/ex220.png" title="TP-Link EX220">
+</div>
+
+
+<p>My main motivation for this research was their ridiculous policy of forcing customers to use this router and not allowing them to use their own.
+A1 also refuses to provide admin credentials for the router and people are forced to call their support for simple tasks like changing the Wi-Fi SSID.
+This is both inconvenient and terrible from privacy and security perspective.</p>
+<h2 id="getting-root-access">Getting root access</h2>
+<p>First thing, of course, is to open the router and try to find UART header for serial console.
+The UART pinout is pretty obvious, we just need to solder a header to the PCB:</p>
+<p><a href="/images/ex220-uart.jpg" title="Serial console">
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/ex220-uart-small.jpg" >
+</div>
+
+</a></p>
+<p>The serial console works but it ends up with a login prompt. I tried some default credentials for <code>root</code> and <code>admin</code> with no success. Fortunately, the bootloader (u-boot) is accessible and it allows loading custom firmware images.
+I downloaded <a href="https://downloads.openwrt.org/releases/24.10.0/targets/ramips/mt7621/openwrt-24.10.0-ramips-mt7621-tplink_ex220-v1-initramfs-kernel.bin">initramfs</a> image from <a href="https://openwrt.org/">OpenWRT</a> and uploaded it using the XMODEM protocol (TFTP didn&rsquo;t work for some reason). It booted successfully and I got access to the device and its flash.</p>
+<p>The next step was to dump the flash partitions and analyze them. There are 13 partitions in total, but only 2 of them are interesting (<code>rootfs</code> and <code>config</code>):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>root@OpenWrt:~# cat /proc/mtd
+</span></span><span style="display:flex;"><span>dev:    size   erasesize  name
+</span></span><span style="display:flex;"><span>mtd0: <span style="color:#ae81ff">00030000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;boot&#34;</span>
+</span></span><span style="display:flex;"><span>mtd1: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;boot-env&#34;</span>
+</span></span><span style="display:flex;"><span>mtd2: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;factory&#34;</span>
+</span></span><span style="display:flex;"><span>mtd3: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;config&#34;</span>
+</span></span><span style="display:flex;"><span>mtd4: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;isp_config&#34;</span>
+</span></span><span style="display:flex;"><span>mtd5: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;rom_file&#34;</span>
+</span></span><span style="display:flex;"><span>mtd6: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;cloud&#34;</span>
+</span></span><span style="display:flex;"><span>mtd7: <span style="color:#ae81ff">00020000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;radio&#34;</span>
+</span></span><span style="display:flex;"><span>mtd8: <span style="color:#ae81ff">00010000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;config_bak&#34;</span>
+</span></span><span style="display:flex;"><span>mtd9: 00f30000 <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;firmware&#34;</span>
+</span></span><span style="display:flex;"><span>mtd10: 003e0000 <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;kernel&#34;</span>
+</span></span><span style="display:flex;"><span>mtd11: 00b50000 <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;rootfs&#34;</span>
+</span></span><span style="display:flex;"><span>mtd12: <span style="color:#ae81ff">00020000</span> <span style="color:#ae81ff">00010000</span> <span style="color:#e6db74">&#34;rootfs_data&#34;</span>
+</span></span></code></pre></div><p><code>rootfs</code> is squashfs image with the root filesystem and <code>config</code> stores the configuration of the device.</p>
+<p>The rootfs has no <code>/etc/shadow</code>, only <code>/etc/passwd</code> with the following users:</p>
+<pre tabindex="0"><code>admin:I55OiXWnKr89Y:0:0:root:/:/bin/sh
+dropbear:x:500:500:dropbear:/var/tmp/dropbear:/bin/sh
+nobody:*:0:0:nobody:/:/bin/sh
+</code></pre><p>It took me ~20min to crack the <code>admin</code> password with <a href="https://hashcat.net/hashcat/">hashcat</a> and RTX 3090 &ndash; it is <strong><code>spbu100e</code></strong>. Now I can login as <code>admin</code> on the serial console with the default firmware.</p>
+<p>The next step was to find how the router configuration is stored in the <code>config</code> partition (<code>rootfs</code> is read-only).
+Turns out it is encrypted with AES-128-CBC and both key and IV are hardcoded in <code>/lib/libcmm.so</code>:</p>
+<pre tabindex="0"><code>key: 1528632946736109
+ IV: 1528632946736539
+</code></pre><p>Dumping the partition to a file and decrypting it with <code>openssl</code> could be done with:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ openssl enc -aes-128-cbc -d -in config.bin -out config.dec --nopad -K <span style="color:#ae81ff">31353238363332393436373336313039</span> -iv <span style="color:#ae81ff">31353238363332393436373336353339</span>
+</span></span></code></pre></div><p>and it <em>almost</em> works. We get plaintext mixed with binary data which probably means they are using some custom format after decryption. Instead of reversing this crap I thought why not just use the original library to dump the configuration for me.
+There is <code>dm_dumpCfg()</code> function in <code>libcmm.so</code> and it appears to be doing exactly that. All I need to do is to build a small binary which loads the library and calls this function.</p>
+<h2 id="toolchain">Toolchain</h2>
+<p>The architecture is MIPS and they are using <a href="https://uclibc-ng.org/">uClibc</a> v1.0.14.
+There are several toolchains for compiling programs with uClibc but the top choice is <a href="https://openadk.org/">OpenADK</a> which is developed by the same people who created uClibc.</p>
+<p>Building the OpenADK toolchain was surprisingly easy. I just had to specify the exact version of uClibc, patch available
+<a href="https://github.com/rgerganov/openadk/tree/ex220">here</a>.</p>
+<h2 id="dumping-the-configuration">Dumping the configuration</h2>
+<p>With some trial and error I came up with this simple program which loads the library and successfully dumps the configuration:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">int</span> (<span style="color:#f92672">*</span>dm_shmInit_fun)(<span style="color:#66d9ef">int</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">int</span> (<span style="color:#f92672">*</span>dm_loadCfg_fun)();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">int</span> (<span style="color:#f92672">*</span>dm_dumpCfg_fun)();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[])
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>handle <span style="color:#f92672">=</span> <span style="color:#a6e22e">dlopen</span>(<span style="color:#e6db74">&#34;/lib/libcmm.so&#34;</span>, RTLD_LAZY);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>handle) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fprintf</span>(stderr, <span style="color:#e6db74">&#34;dlopen failed</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    dm_shmInit_fun dm_shmInit <span style="color:#f92672">=</span> <span style="color:#a6e22e">dlsym</span>(handle, <span style="color:#e6db74">&#34;dm_shmInit&#34;</span>);
+</span></span><span style="display:flex;"><span>    dm_loadCfg_fun dm_loadCfg <span style="color:#f92672">=</span> <span style="color:#a6e22e">dlsym</span>(handle, <span style="color:#e6db74">&#34;dm_loadCfg&#34;</span>);
+</span></span><span style="display:flex;"><span>    dm_dumpCfg_fun dm_dumpCfg <span style="color:#f92672">=</span> <span style="color:#a6e22e">dlsym</span>(handle, <span style="color:#e6db74">&#34;dm_dumpCfg&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>dm_shmInit <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>dm_loadCfg <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>dm_dumpCfg) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fprintf</span>(stderr, <span style="color:#e6db74">&#34;dlsym failed</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dm_shmInit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dm_loadCfg</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dm_dumpCfg</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Build and publish on the host:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$OPENADK_ROOT/toolchain_generic-mips_uclibc-ng_mips32r2el_soft/usr/mipsel-openadk-linux-uclibc/bin/gcc -o dumpcfg dumpcfg.c -ldl
+</span></span><span style="display:flex;"><span>python3 -m http.server
+</span></span></code></pre></div><p>Download and run on the router:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl --output dumpcfg http://192.168.0.2:8000/dumpcfg
+</span></span><span style="display:flex;"><span>chmod +x dumpcfg
+</span></span><span style="display:flex;"><span>export LD_PRELOAD<span style="color:#f92672">=</span>/lib/libgdpr.so:/lib/libcutil.so:/lib/libmapShared.so:/lib/libos.so:/lib/libxml.so:/lib/libcmm.so
+</span></span><span style="display:flex;"><span>./dumpcfg
+</span></span></code></pre></div><p>The result is a giant XML which contains the entire configuration of the router. Here are some interesting parts:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;Device&gt;</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;DeviceInfo&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;ManufacturerOUI&gt;</span>F0A731<span style="color:#f92672">&lt;/ManufacturerOUI&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;X_TP_DeviceModel&gt;</span>EX220(EU)<span style="color:#f92672">&lt;/X_TP_DeviceModel&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;SerialNumber&gt;</span>REDACTED<span style="color:#f92672">&lt;/SerialNumber&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;HardwareVersion&gt;</span>EX220 v1.0 00000000<span style="color:#f92672">&lt;/HardwareVersion&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;SoftwareVersion&gt;</span>A1.EX220.016<span style="color:#f92672">&lt;/SoftwareVersion&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;ProvisioningCode&gt;</span>1<span style="color:#f92672">&lt;/ProvisioningCode&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;UpTime&gt;</span>7<span style="color:#f92672">&lt;/UpTime&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;X_TP_ConfigVersion&gt;</span>1509949442<span style="color:#f92672">&lt;/X_TP_ConfigVersion&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/DeviceInfo&gt;</span>
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;X_TP_UserCfg&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;AdminName&gt;</span>root<span style="color:#f92672">&lt;/AdminName&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;AdminPwd&gt;</span>aDm1n$TR8r<span style="color:#f92672">&lt;/AdminPwd&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;UserEnable&gt;</span>0<span style="color:#f92672">&lt;/UserEnable&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;UserRemoteEnable&gt;</span>0<span style="color:#f92672">&lt;/UserRemoteEnable&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/X_TP_UserCfg&gt;</span>
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/Device&gt;</span>
+</span></span></code></pre></div><p>User <code>root</code> and password <code>aDm1n$TR8r</code> are the default credentials for the web interface.
+Now even if the ISP changes the password (via <a href="https://en.wikipedia.org/wiki/TR-069">TR-069</a>), we can always dump the configuration and get it back!</p>
+<p>This completes the quest of having full control over this router.</p>
+<h2 id="ssh-access">SSH access</h2>
+<p>Having root access on the serial console is great but it is not very convenient. SSH access would be much better.
+The default firmware has dropbear SSH server but it <a href="https://www.tp-link.com/us/support/faq/2462/">doesn&rsquo;t give shell access</a>. OK, then let&rsquo;s build our own <code>dropbear</code> which gives shell access.
+Checkout my <a href="https://github.com/rgerganov/openadk/tree/ex220">OpenADK fork</a> and run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ make package<span style="color:#f92672">=</span>dropbear clean package
+</span></span></code></pre></div><p>Update the <code>rootfs</code> image with the new <code>dropbear</code> binary and flash it back:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># Host side</span>
+</span></span><span style="display:flex;"><span>unsquashfs -d rootfs-work partitions/rootfs.bin
+</span></span><span style="display:flex;"><span>cp $OPENADK_ROOT/target_generic-mips_uclibc-ng_mips32r2el_soft/usr/sbin/dropbear rootfs-work/usr/bin/dropbearmulti
+</span></span><span style="display:flex;"><span>mksquashfs rootfs-work rootfs-patched.squashfs -b <span style="color:#ae81ff">262144</span> -comp xz
+</span></span><span style="display:flex;"><span>python3 -m http.server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Router side</span>
+</span></span><span style="display:flex;"><span>curl --output rootfs.bin http://192.168.1.10:8000/rootfs-patched.squashfs
+</span></span><span style="display:flex;"><span>mtd -r write rootfs.bin rootfs
+</span></span></code></pre></div><h2 id="wps-pin-generation">WPS PIN generation</h2>
+<p>Finally, let&rsquo;s look at the WPS PIN generation. We have this page in the Web UI which allows us to generate a new WPS PIN:</p>
+
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/ex220-wps.png" title="WPS PIN">
+</div>
+
+
+<p><a href="https://sec.stanev.org/">Alex Stanev</a> found this nice function in the <code>libcmm.so</code> library:</p>
+
+
+<div class="pure-u-1-1">
+  <img class="pure-img" src="/images/ex220-wps-gen.png" title="WPS PIN Generation">
+</div>
+
+
+<p>It initializes the random number generator with the current time and then calls <code>rand()</code> to get the WPS PIN (the last digit is a checksum). Let&rsquo;s verify this with a simple C program:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">srand</span>(<span style="color:#a6e22e">atoi</span>(argv[<span style="color:#ae81ff">1</span>]));
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;rand() = %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">rand</span>());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>I clicked the &ldquo;Generate&rdquo; button in the Web UI at 2025-04-06 12:40:40 and I got the WPS PIN <code>69636486</code>.
+Converting the timestamp to seconds since epoch gives us <code>1743932440</code> which is the input for <code>srand()</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ gcc rand.c -o rand
+</span></span><span style="display:flex;"><span>$ ./rand <span style="color:#ae81ff">1743932440</span>
+</span></span><span style="display:flex;"><span>rand<span style="color:#f92672">()</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">669636489</span>
+</span></span></code></pre></div><p>The last digit is a checksum and the WPS PIN is <code>69636486</code> which is exactly what I got from the Web UI.
+It appears that uClibc is using the same algorithm as glibc for generating random numbers.</p>
+<p>Oh, and one last thing. The default WiFi password is the same as the default WPS PIN.
+How to exploit this is left as an exercise for the reader.</p>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://xakcop.com/post/smartcom-wpa/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://xakcop.com/post/smartcom-wpa/">Default Wi-Fi passwords</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://xakcop.com/js/ui.js"></script>
+<script src="https://xakcop.com/js/menus.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+
